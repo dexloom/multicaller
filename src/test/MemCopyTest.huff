@@ -1,0 +1,129 @@
+#include "../utils/Memory.huff"
+
+#[calldata("0x11000000000000000000000000000000000000000000000000000000000000257ffbfffffffffffffffe000500000000000000000000000000000000000000FF01021100")]
+#define test MEM_COPY_TEST1() = {
+    0x1111
+    0x40
+    0x0
+    0x100
+    calldatacopy
+    0x20
+    0x100
+    0x0
+    MEM_COPY()
+    0x0 mload
+    0x1100000000000000000000000000000000000000000000000000000000000025 eq ok1 jumpi
+    0xE1 0x0 mstore 0x20 0x0 revert
+    ok1:
+    0x1111 eq ok2 jumpi
+    0xE2 0x0 mstore 0x20 0x0 revert
+    ok2:
+
+}
+
+#[calldata("0x11000000000000000000000000000000000000000000000000000000000000257ffbfffffffffffffffe000500000000000000000000000000000000000000FF01021100")]
+#define test MEM_COPY_TEST1() = {
+    0x1111
+    0x40
+    0x0
+    0x100
+    calldatacopy
+
+    0xFFFF000000000000000000000000000000000000000000000000000000000099 0x0 mstore
+
+    0x1F
+    0x100
+    0x0
+    MEM_COPY()
+    0x0 mload
+    //dup1 0x0 mstore 0x20 0x0 revert
+
+    0x1100000000000000000000000000000000000000000000000000000000000099 eq ok1 jumpi
+    0xE1 0x0 mstore 0x20 0x0 revert
+    ok1:
+    0x1111 eq ok2 jumpi
+    0xE2 0x0 mstore 0x20 0x0 revert
+    ok2:
+
+}
+
+#[calldata("0x11220000000000000000000000000000000000000000000000000000000000257ffbfffffffffffffffe0005000000000000000000000000000000000000008801021100")]
+#define test MEM_COPY_TEST3() = {
+    0x1111
+    0x40
+    0x0
+    0x100
+    calldatacopy
+
+    0xFFFF000000000000000000000000000000000000000000000000000000000099 0x1 mstore
+
+    0x21
+    0x100
+    0x0
+    MEM_COPY()
+    0x1 mload
+    //dup1 0x0 mstore 0x20 0x0 revert
+
+    0x220000000000000000000000000000000000000000000000000000000000257f eq ok1 jumpi
+    0xE1 0x0 mstore 0x20 0x0 revert
+    ok1:
+    0x1111 eq ok2 jumpi
+    0xE2 0x0 mstore 0x20 0x0 revert
+    ok2:
+
+}
+
+#[calldata("0x11220000000000000000000000000000000000000000000000000000000000257ffbfffffffffffffffe0005000000000000000000000000000000000000008801021100")]
+#define test MEM_COPY_TEST4() = {
+    0x1111
+    0x40
+    0x0
+    0x100
+    calldatacopy
+
+    //0xFFFF000000000000000000000000000000000000000000000000000000000099 0x1 mstore
+
+    0x21
+    0x100
+    0x0
+    MEM_COPY()
+    0x0 mload
+    0x100 mload
+    //dup1 0x0 mstore 0x20 0x0 revert
+    eq ok1 jumpi
+    0xE1 0x0 mstore 0x20 0x0 revert
+    ok1:
+    0x20 mload 0xFF and
+    0x120 mload 0xFF and 
+    //dup2 0x0 mstore 0x20 0x0 revert
+    eq ok2 jumpi
+    0xE2 0x0 mstore 0x20 0x0 revert
+    ok2:
+
+}
+
+#[calldata("0x11220000000000000000000000000000000000000000000000000000000000257ffbfffffffffffffffe0005000000000000000000000000000000000000008801021100")]
+#define test MEM_COPY_WORDS_TEST3() = {
+    0x1111
+    0x40
+    0x0
+    0x100
+    calldatacopy
+
+    0xFFFF000000000000000000000000000000000000000000000000000000000099 0x2 mstore
+
+    0x21
+    0x100
+    0x0
+    MEM_COPY_WORDS()
+    0x2 mload
+    //dup1 0x0 mstore 0x20 0x0 revert
+
+    0x0000000000000000000000000000000000000000000000000000000000257f00 eq ok1 jumpi
+    0xE1 0x0 mstore 0x20 0x0 revert
+    ok1:
+    0x1111 eq ok2 jumpi
+    0xE2 0x0 mstore 0x20 0x0 revert
+    ok2:
+
+}

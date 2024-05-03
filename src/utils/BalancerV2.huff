@@ -1,0 +1,14 @@
+#define macro BALANCER_FLASHLOAN() = takes(0) returns(0) {
+    0x4 calldataload
+    0x24 add
+    calldataload //[token]
+    0x24 calldataload
+    0x24 add
+    calldataload //[amount, token]
+    0x44 calldataload
+    0x24 add
+    calldataload //[fee, amount, token]
+    add // [amount+fee, token]
+    caller // [caller, amount+fee, token]
+    TRANSFER_ERC20()
+}

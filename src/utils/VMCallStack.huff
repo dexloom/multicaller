@@ -1,0 +1,104 @@
+//#include "utils/VMStack.huff"
+#include "Memory.huff"
+
+
+
+
+// ABBCCC
+// A 01234567
+// 0 - rel mask
+// 123 - vm stack word offset
+// BB  byte data length
+// CC memory data offset
+
+#define macro SETUP_STACK() = takes(2) returns(0) {
+    //[mask, data_offset]
+    dup1 iszero exit_ss_no_need jumpi
+    dup1 0xFFFFFF eq exit_ss_no_need jumpi
+    swap1
+    dup2 0xFFF and add // [dst_offset_bytes, mask]
+    dup2 0xC shr 0xFF and // bytes_len
+    dup1 iszero exit_ss_no_need2 jumpi
+
+    swap1
+    dup3 0x14 shr 0x7 and 0x5 shl 0x20 add // stack
+
+    dup4 0x800000 and iszero norel jumpi
+
+    0x20 swap1 sub
+    0x0 mload
+    sub 
+    norel:
+
+
+     // [src_offset_bytes, dst_offset_bytes, bytes_len]
+    swap1 // [dst_offset_bytes, src_offset_bytes, bytes_len]
+
+    MEM_COPY() 
+    //dup2 0x0 mstore 0x20 0x0 revert
+    exit_ss jump
+    exit_ss_no_need2:
+    pop
+
+    exit_ss_no_need:
+    pop
+
+    exit_ss:
+    pop
+}
+
+#define macro GET_STACK_WORD() = takes(1) returns(1) {
+    //[mask]
+    dup1 0x14 shr 0x7 and 0x5 shl 0x20 add // stack
+    dup2 0x800000 and iszero norel jumpi
+
+    0x20 swap1 sub
+    0x0 mload
+    sub 
+    norel:
+
+    mload
+    swap1 
+    pop 
+}
+
+
+#define macro PUSH_CALL_RETURN() = takes(1) returns(0) {
+          //[mask]
+    dup1 iszero exit_cr jumpi
+    dup1 0xFFFFFF eq exit_cr jumpi
+    //dup1 0x0 mstore 0x20 0x0 revert
+
+    dup1 0xFFF and  // [dst_offset_bytes, mask]
+    dup2 0xC shr 0xFF and // [bytes_len, dst_offset_bytes, mask]
+    swap1 // [dst_offset_bytes, bytes_len,  mask]
+    dup3 0x14 shr 0x7 and 0x5 shl  // [stack_offset, dst_offset_bytes, bytes_len,  mask]
+
+    dup4 0x800000 and iszero norel_cr jumpi
+    0x0 mload
+    sub // [stack_offset, dst_offset_bytes, bytes_len,  mask]
+    //dup1 0x0 mstore 0x20 0x0 revert
+    
+    dup1 dup4 add 
+
+    0x5 shr 
+    0x5 shl 
+      
+    dup4 0x1F and iszero noadd_cr jumpi
+    //dup1 0x0 mstore 0x20 0x0 revert
+    0x20 add
+    0x0 dup2 mstore 
+    noadd_cr:
+    0x0 mstore
+  
+    norel_cr:
+    0x20 add
+     // [src_offset_bytes, dst_offset_bytes, bytes_len]
+    //calldatacopy
+
+    returndatacopy
+
+    exit_cr:
+    pop
+}
+

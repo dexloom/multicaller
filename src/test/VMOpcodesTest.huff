@@ -1,0 +1,160 @@
+#include "../utils/VMOpcodes.huff"
+#include "../utils/VMStack.huff"
+
+
+#[calldata("0x200000000000000000000000000000000000000000000000000000000000000123021100")]
+#define test TEST_DO_CALCULATIONS1() = {
+    0x100
+    0x0
+    0x100
+    calldatacopy
+    //0x0 mload
+    //dup1 0x0 mstore 0x20 0x0 revert
+
+    
+
+    0x333
+    PUSH_STACK()
+    0x222
+    PUSH_STACK()
+    0x111
+    PUSH_STACK()
+    0x211
+    0x201
+    0x202
+    0x203
+    0x100 
+    DO_CALCULATIONS()
+    //dup1 0x0 mstore 0x20 0x0 revert
+    dup2 0x203 eq ok1 jumpi
+    0xE0 0x0 mstore 0x20 0x0 revert
+    ok1:
+    //dup1 0x0 mstore 0x20 0x0 revert
+    //0x9999 0x0 mstore 0x20 0x0 revert 
+    
+}
+
+#[calldata("0x010211031100")]
+#define test TEST_DO_CALCULATIONS2() = {
+    0x100
+    0x0
+    0x0
+    calldatacopy
+    0x0 mload
+    //dup1 0x0 mstore 0x20 0x0 revert
+
+    0x222
+    0x111
+    0x101
+    0x102
+    0x103
+    0x0  
+    DO_CALCULATIONS()
+    dup2 0x103 eq ok1 jumpi
+    dup2 0x0 mstore 0x20 0x0 revert
+    ok1:
+
+    //0x9999 0x0 mstore 0x20 0x0 revert 
+    
+}
+
+#[calldata("0x2000000000000000000000000000000000000000000000000000000000000001232000000000000000000000000000000000000000000000000000000000000001231100")]
+#define test TEST_DO_CALCULATIONS3() = {
+    0x100
+    0x0
+    0x0
+    calldatacopy
+    0x0 mload
+    //dup1 0x0 mstore 0x20 0x0 revert
+
+    0x222
+    0x111
+    0x101
+    0x102
+    0x103
+    0x0  
+    DO_CALCULATIONS()
+    dup2 0x103 eq ok1 jumpi
+    dup2 0x0 mstore 0x20 0x0 revert
+    ok1:
+    dup1 0x246 eq ok2 jumpi
+    dup1 0x0 mstore 0x20 0x0 revert
+    ok2:
+    //dup1 0x0 mstore 0x20 0x0 revert
+    //0x9999 0x0 mstore 0x20 0x0 revert 
+    
+}
+
+#[calldata("0x20000000000000000000000000000000000000000000000000000000000000012300")]
+#define test TEST_DO_CALCULATIONS4() = {
+    0x100
+    0x0
+    0x100
+    calldatacopy
+    //0x0 mload
+    //dup1 0x0 mstore 0x20 0x0 revert
+
+    
+
+    0x333
+    PUSH_STACK()
+    0x222
+    PUSH_STACK()
+    0x111
+    PUSH_STACK()
+    0x211
+    0x201
+    0x202
+    0x203
+    0x100 
+    DO_CALCULATIONS()
+    //dup1 0x0 mstore 0x20 0x0 revert
+    dup2 0x203 eq ok1 jumpi
+    0xE0 0x0 mstore 0x20 0x0 revert
+    ok1:
+
+    dup1 0x123 eq ok2 jumpi
+    0xE1 0x0 mstore 0x20 0x0 revert
+    ok2:
+
+    //dup1 0x0 mstore 0x20 0x0 revert
+    //0x9999 0x0 mstore 0x20 0x0 revert    
+}
+
+
+//000000000000000000000000000000000000000000000000000000000000000417ffbfffffffffffffffe00225615deb798bb3e4dfa0139dfa1b3d433cc23b700200000000000000000000000005615deb798bb3e4dfa0139dfa1b3d433000000000000000000000000000000000000000000000000000000000000
+#[calldata("200000000000000000000000005615deb798bb3e4dfa0139dfa1b3d433000000000000000000000000000000000000000000000000000000000000")]
+#define test TEST_DO_CALCULATIONS5() = {
+    0x100
+    0x0
+    0x100
+    calldatacopy
+    //0x0 mload
+    //dup1 0x0 mstore 0x20 0x0 revert
+
+    
+
+    0x333
+    PUSH_STACK()
+    0x222
+    PUSH_STACK()
+    0x111
+    PUSH_STACK()
+    0x211
+    0x201
+    0x202
+    0x203
+    0x100 
+    DO_CALCULATIONS()
+    //dup1 0x0 mstore 0x20 0x0 revert
+    dup2 0x203 eq ok1 jumpi
+    0xE0 0x0 mstore 0x20 0x0 revert
+    ok1:
+
+    dup1 0x0000000000000000000000005615deb798bb3e4dfa0139dfa1b3d43300000000 eq ok2 jumpi
+    0xE1 0x0 mstore 0x20 0x0 revert
+    ok2:
+
+    //dup1 0x0 mstore 0x20 0x0 revert
+    //0x9999 0x0 mstore 0x20 0x0 revert    
+}

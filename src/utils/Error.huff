@@ -1,0 +1,10 @@
+#define error Error(string)
+
+#define macro PANIC() = takes (2) returns (0) {
+    __ERROR(Error)        // [error_selector, message_length, message]
+    0x00 mstore           // [message_length, message]
+    0x20 0x04 mstore      // [message_length, message]
+    0x24 mstore           // [message]
+    0x44 mstore           // []
+    0x64 0x00 revert
+}

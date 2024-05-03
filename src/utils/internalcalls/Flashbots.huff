@@ -1,0 +1,149 @@
+#include "Error.huff"
+
+
+
+
+#define macro TRANSFER_TIPS_MIN_BALANCE() = takes(0) returns(0) {
+  //[offset]
+
+  dup1 0x4 add mload // [token, offset]
+  dup2 0x24 add mload // [minbalance, token, offset]
+  dup3 0x44 add mload // [tips, minbalance, token, offset]
+
+  dup3 // [token, tips, minbalance, token, offset]
+  STATIC_CALL_TOKEN_BALANCE_MINUS_ONE() // [balance, token, tips, minbalance, token, offset]
+  
+  dup1 dup5 // [minbalance, balance, balance, token, tips, minbalance, token, offset]
+  gt iszero ok jumpi // [balance, token, tips, minbalance, token, offset]]
+  __RIGHTPAD(0x4242)
+  0x2
+  PANIC()
+
+  ok:
+
+  dup6 0x64 add mload // [owner, balance, token, tips, minbalance, token, offset]]
+  TRANSFER_ERC20() // [tips, minbalance, token, offset]]
+
+  dup1 iszero notips jumpi
+
+
+  0x00        
+  0x00         
+  0x00        
+  0x00        
+  dup5
+  coinbase  
+  gas         
+  call // [success, tips, minbalance, token, offset]]
+  pop // [tips, minbalance, token, offset]
+  
+  notips:
+
+  pop
+  pop
+  pop
+
+}
+
+
+#define macro TRANSFER_TIPS_MIN_BALANCE_NO_PAYOUT() = takes(0) returns(0) {
+  //[offset]
+
+  dup1 0x4 add mload // [token, offset]
+  dup2 0x24 add mload // [minbalance, token, offset]
+  dup3 0x44 add mload // [tips, minbalance, token, offset]
+
+  dup3 // [token, tips, minbalance, token, offset]
+  STATIC_CALL_TOKEN_BALANCE_MINUS_ONE(error) // [balance, token, tips, minbalance, token, offset]
+  
+  dup1 dup5 // [minbalance, balance, balance, token, tips, minbalance, token, offset]
+  gt iszero ok jumpi // [balance, token, tips, minbalance, token, offset]]
+  __RIGHTPAD(0x4242)
+  0x2
+  PANIC()
+
+  ok:
+
+   // [balance, token, tips, minbalance, token, offset]]
+  pop
+  pop
+
+  dup1 iszero notips jumpi
+
+
+  0x00        
+  0x00         
+  0x00        
+  0x00        
+  dup5
+  coinbase  
+  gas         
+  call // [success, tips, minbalance, token, offset]]
+  pop // [tips, minbalance, token, offset]
+  
+  notips:
+
+  pop
+  pop
+  pop
+
+}
+
+
+#define macro TRANSFER_TIPS_MIN_BALANCE_WETH() = takes(0) returns(0) {
+  //[offset]
+  [_WETH_ADDRESS] // [token, offset]
+  dup2 0x04 add mload // [minbalance, token, offset]  
+  dup3 0x24 add mload // [tips, minbalance, token, offset]
+
+  //dup4 0x44 add mload // [tips, minbalance, token, offset]
+
+  dup3 // [token, tips, minbalance, token, offset]
+  STATIC_CALL_TOKEN_BALANCE_MINUS_ONE(error) // [balance, token, tips, minbalance, token, offset]
+  dup1 dup5  // [minbalance, balance, balance, token, tips, minbalance, token, offset]
+
+  gt iszero ok jumpi // [balance, token, tips, minbalance, token, offset]]
+
+  __RIGHTPAD(0x4242) 
+  0x2
+  PANIC()
+
+  ok:
+
+  WITHDRAW_WETH() //[ token, tips, minbalance, token, offset]
+
+  dup2 iszero notips jumpi
+
+  0x00        
+  0x00         
+  0x00        
+  0x00        
+  dup6      
+  coinbase        
+  gas         
+  call // [success, balance, token, tips, minbalance, token, offset]]
+  pop //[balance, token, tips, minbalance, token, offset]]
+  
+  notips:
+
+  dup5 0x44 add mload // [owner, offset]  
+
+
+  0x00         
+  0x00        
+  0x00        
+  selfbalance      
+  0x00        
+  swap5        
+  gas         
+  call // [success, balance, token, tips, minbalance, token, offset]]
+  pop
+
+
+  pop
+  pop
+  pop
+  pop
+  pop
+
+}

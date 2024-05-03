@@ -1,0 +1,30 @@
+#define macro UNI3_SLOT0() = takes(1) returns(0) {
+    // Static Call token.balanceOf(address(this))
+    0x100 mload //[mem_offset, pool]
+    __FUNC_SIG("slot0()") dup2 mstore       // [mem_offset]
+    0x0                                    // [retSize, mem_offset]
+    0x0                                    // [retOffset, retSize, mem_offset]
+    0x4                                     // [argSize, retOffset, retSize, mem_offset]
+    dup4 0x1c add                           // [argOffset, argSize, retOffset, retSize, mem_offset]
+    dup6                                    // [to, argOffset, argSize, retOffset, retSize, mem_offset]
+    gas                                     // [gas, to, argOffset, argSize, retOffset, retSize, mem_offset]
+    staticcall                              // [success, mem_offset, pool]
+    // Validate successful call
+    pop 
+    pop
+    pop
+ }
+
+#define macro UNI3_SQRT_PRICE() = takes(1) returns(0) {
+    // [call_data_offset]
+    0x4 add mload
+    UNI3_SLOT0() 
+    0x0 mload
+    0x20 add
+    0x20
+    0x0
+    dup3 
+    returndatacopy
+    0x0 mstore
+}
+

@@ -1,0 +1,12 @@
+#include "Error.huff"
+
+#define macro CHECK_OWNER() = takes(0) returns(0) {
+  origin
+  dup1 0x1111 eq owner_ok jumpi
+  
+  __RIGHTPAD(0x4E4F)
+  0x2
+  PANIC()
+  owner_ok:
+  pop
+}

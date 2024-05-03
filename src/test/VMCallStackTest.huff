@@ -1,0 +1,215 @@
+#include "../utils/VMCallStack.huff"
+#include "../utils/VMStack.huff"
+
+
+#define macro MAKE_STACK_MASK(isrel, stack, bytes_len, offset) = takes(4) returns(1){
+  //[isrel, stack, bytes_len, offset]
+  <offset>
+  <bytes_len>
+  <stack>
+  <isrel>
+
+  0x1 and 
+  0x3 shl
+  swap1 
+  0x7 and
+  or
+  0x8 shl
+  swap1 
+  0xFF and
+  or 
+  0xC shl 
+  or 
+}
+
+
+
+#define test MAKE_STACK_MASK1() = {
+    MAKE_STACK_MASK(0x0, 0x1, 0x20, 0x120)
+    //dup1 0x0 mstore 0x20 0x0 revert
+    0x120120 eq ok1 jumpi
+    0xE1 0x0 mstore 0x20 0x0 revert
+    ok1:
+
+    MAKE_STACK_MASK(0x1, 0x2, 0x40, 0x77)
+    //dup1 0x0 mstore 0x20 0x0 revert
+    0xA40077 eq ok2 jumpi
+    0xE2 0x0 mstore 0x20 0x0 revert
+    ok2:
+  
+}
+
+#[calldata("7ffbfffffffffffffffe0005000000000000000000000000000000000000008801021100")]
+#define test SETUP_STACK_TEST1() = {
+  calldatasize
+  0x0
+  0x100
+  calldatacopy
+
+  0x3333
+  0x40 mstore
+
+  0x222
+  0x101
+  MAKE_STACK_MASK(0x0, 0x1, 0x20, 0x120)
+  SETUP_STACK()
+  0x221 mload
+  //dup1 0x0 mstore 0x20 0x0 revert
+  0x3333 eq ok1 jumpi
+  0xE1 0x0 mstore 0x20 0x0 revert
+  ok1:
+}
+
+#[calldata("7ffbfffffffffffffffe0005000000000000000000000000000000000000008801021100")]
+#define test SETUP_STACK_TEST2() = {
+  calldatasize
+  0x0
+  0x100
+  calldatacopy
+
+  0x3333 
+  PUSH_STACK()
+  0x4444
+  PUSH_STACK()
+
+
+  0x222
+  0x101
+  MAKE_STACK_MASK(0x1, 0x1, 0x18, 0x120)
+  SETUP_STACK()
+  0x221 mload
+  //dup1 0x0 mstore 0x20 0x0 revert
+  0x3333 eq ok1 jumpi
+  0xE1 0x0 mstore 0x20 0x0 revert
+  ok1:
+  0x241 mload
+  //dup1 0x0 mstore 0x20 0x0 revert
+  0x0 eq ok2 jumpi
+  0xE2 0x0 mstore 0x20 0x0 revert
+  ok2:
+
+
+}
+
+
+#[calldata("7ffbfffffffffffffffe0005000000000000000000000000000000000000008801021100")]
+#define test SETUP_STACK_TEST3() = {
+  calldatasize
+  0x0
+  0x100
+  calldatacopy
+
+  0x3333 
+  PUSH_STACK()
+  0x4444
+  PUSH_STACK()
+
+
+  0x222
+  0x101
+  MAKE_STACK_MASK(0x1, 0x1, 0x22, 0x120)
+  SETUP_STACK()
+  0x221 mload
+  //dup1 0x0 mstore 0x20 0x0 revert
+  0x3333 eq ok1 jumpi
+  0xE1 0x0 mstore 0x20 0x0 revert
+  ok1:
+  0x241 mload
+  //dup1 0x0 mstore 0x20 0x0 revert
+  0x4444 eq ok2 jumpi
+  0xE2 0x0 mstore 0x20 0x0 revert
+  ok2:
+
+
+}
+
+
+#[calldata("7ffbfffffffffffffffe0005000000000000000000000000000000000000008801021100")]
+#define test PUSH_CALL_RETURN_TEST1() = {
+  0x3333 
+  PUSH_STACK()
+  0x4444
+  PUSH_STACK()
+
+  0x222
+  0x101
+  MAKE_STACK_MASK(0x0, 0x0, 0x20, 0x1)
+  PUSH_CALL_RETURN()
+  0x20 mload
+  //dup1 0x0 mstore 0x20 0x0 revert
+  0xfbfffffffffffffffe0005000000000000000000000000000000000000008801 eq ok1 jumpi
+  0xE1 0x0 mstore 0x20 0x0 revert
+  ok1:
+}
+
+#[calldata("7ffbfffffffffffffffe0005000000000000000000000000000000000000008801021100")]
+#define test PUSH_CALL_RETURN_TEST2() = {
+  0x3333 
+  PUSH_STACK()
+  0x4444
+  PUSH_STACK()
+  0x0 mload
+
+  0x222
+  0x101
+  MAKE_STACK_MASK(0x1, 0x0, 0x20, 0x1)
+  PUSH_CALL_RETURN()
+  //0x0 mload
+  //dup1 0x0 mstore 0x20 0x0 revert
+
+
+  0x60 mload
+  //dup1 0x0 mstore 0x20 0x0 revert
+  0xfbfffffffffffffffe0005000000000000000000000000000000000000008801 eq ok1 jumpi
+  0xE1 0x0 mstore 0x20 0x0 revert
+  ok1:
+  0x0 mload
+  0x60 eq ok2 jumpi
+  0xE2 0x0 mstore 0x20 0x0 revert
+  ok2:
+
+
+}
+
+
+#[calldata("7ffbfffffffffffffffe0005000000000000000000000000000000000000008801021100")]
+#define test PUSH_CALL_RETURN_TEST3() = {
+  0x3333 
+  PUSH_STACK()
+  0x4444
+  PUSH_STACK()
+  0x0 mload
+
+  0x222
+  0x101
+  MAKE_STACK_MASK(0x1, 0x0, 0x21, 0x1)
+  PUSH_CALL_RETURN()
+  //0x0 mload
+  //dup1 0x0 mstore 0x20 0x0 revert
+
+
+  0x60 mload
+  //dup1 0x0 mstore 0x20 0x0 revert
+  0xfbfffffffffffffffe0005000000000000000000000000000000000000008801 eq ok1 jumpi
+  0xE1 0x0 mstore 0x20 0x0 revert
+  ok1:
+
+  0x80 mload
+  //dup1 0x0 mstore 0x20 0x0 revert
+  0x0200000000000000000000000000000000000000000000000000000000000000 eq ok2 jumpi
+  0xE2 0x0 mstore 0x20 0x0 revert
+  ok2:
+
+
+  0x0 mload
+  //dup1 0x0 mstore 0x20 0x0 revert
+  0x80 eq ok3 jumpi
+  0xE3 0x0 mstore 0x20 0x0 revert
+  ok3:
+
+  //dup2 0x0 mstore 0x20 0x0 revert
+  0x101 eq ok4 jumpi
+  0xE4 0x0 mstore 0x20 0x0 revert
+  ok4:
+
+}

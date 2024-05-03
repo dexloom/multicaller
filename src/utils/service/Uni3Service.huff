@@ -1,0 +1,19 @@
+//#include "./MulticallerService.huff"
+
+ #define macro UNI3_QUICK_RETURN_IN_AMOUNT() = takes(1) returns(0) {
+    0x20 add 
+
+    calldataload
+    0x60 shr
+    0x4 calldataload dup1 0x0 swap1 slt amount1v3 jumpi
+    exitqr3 jump
+    
+    amount1v3:
+    pop
+    0x24 calldataload
+
+    exitqr3:
+    caller 
+    TRANSFER_ERC20()
+    
+ }

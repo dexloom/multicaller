@@ -1,0 +1,270 @@
+#include "../utils/VMStack.huff"
+
+
+/*
+#[calldata("0x0000000000000000000000000000000000000000000000000000000000000111")]
+#define test TEST_PUSH_CALL_RETURN() = {
+    0x101
+    0x102
+    0x103
+    0x1000    
+    PUSH_CALL_RETURN()
+    dup4 0x111 eq ok jumpi
+    dup4 0x0 mstore 0x20 0x0 revert
+    ok:
+    
+}
+*/
+
+/*
+#[calldata("0x00000000000000000000000000000000000000000000000000000000000001110000000000000000000000000000000000000000000000000000000000000222")]
+#define test TEST_PUSH_CALL_RETURN2() = {
+    0x101
+    0x102
+    0x103
+    0x1020    
+    PUSH_CALL_RETURN()
+    dup4 0x222 eq ok jumpi
+    dup4 0x0 mstore 0x20 0x0 revert
+    ok:
+}
+*/
+/*
+#[calldata("0x00000000000000000000000000000000000000000000000000000000000001110000000000000000000000000000000000000000000000000000000000000222")]
+#define test TEST_PUSH_CALL_RETURN3() = {
+    0x101
+    0x102
+    0x103
+    0x2000    
+    PUSH_CALL_RETURN()
+    dup4 0x111 eq ok1 jumpi
+    dup4 0x0 mstore 0x20 0x0 revert
+    ok1:
+    dup5 0x222 eq ok2 jumpi
+    dup5 0x0 mstore 0x20 0x0 revert
+    ok2:
+}
+*/
+
+
+/*
+#[calldata("0x00000000000000000000000000000000000000000000000000000000000001110000000000000000000000000000000000000000000000000000000000000222000000000000000000000000000000000000000000000000000000000000011100000000000000000000000000000000000000000000000000000000000002220000000000000000000000000000000000000000000000000000000000000111000000000000000000000000000000000000000000000000000000000000022200000000000000000000000000000000000000000000000000000000000001110000000000000000000000000000000000000000000000000000000000000222")]
+#define test TEST_SETUP_STACK() = {
+    0x100
+    0x0
+    0x0
+    calldataload
+    0x222
+    0x111
+    0x101
+    0x102
+    0x103
+    0x11
+    0x1005   
+    SETUP_STACK()
+    dup1 0x103 eq ok1 jumpi
+    dup1 0x0 mstore 0x20 0x0 revert
+    ok1:
+    dup2 0x102 eq ok2 jumpi
+    dup2 0x0 mstore 0x20 0x0 revert
+    ok2:
+    dup3 0x101 eq ok3 jumpi
+    dup3 0x0 mstore 0x20 0x0 revert
+    ok3:
+    dup4 0x111 eq ok4 jumpi
+    dup4 0x0 mstore 0x20 0x0 revert
+    ok4:
+    dup5 0x222 eq ok5 jumpi
+    dup5 0x0 mstore 0x20 0x0 revert
+    ok5:
+
+
+}
+*/
+/*
+#[calldata("0x00000000000000000000000000000000000000000000000000000000000001110000000000000000000000000000000000000000000000000000000000000222000000000000000000000000000000000000000000000000000000000000011100000000000000000000000000000000000000000000000000000000000002220000000000000000000000000000000000000000000000000000000000000111000000000000000000000000000000000000000000000000000000000000022200000000000000000000000000000000000000000000000000000000000001110000000000000000000000000000000000000000000000000000000000000222")]
+#define test TEST_SETUP_STACK2() = {
+    0x100
+    0x0
+    0x0
+    calldataload
+    0x222
+    0x111
+    0x101
+    0x102
+    0x103
+    0x11
+    0x0000   
+    SETUP_STACK()
+    dup1 0x103 eq ok1 jumpi
+    dup1 0x0 mstore 0x20 0x0 revert
+    ok1:
+    dup2 0x102 eq ok2 jumpi
+    dup2 0x0 mstore 0x20 0x0 revert
+    ok2:
+    dup3 0x101 eq ok3 jumpi
+    dup3 0x0 mstore 0x20 0x0 revert
+    ok3:
+    dup4 0x111 eq ok4 jumpi
+    dup4 0x0 mstore 0x20 0x0 revert
+    ok4:
+    dup5 0x222 eq ok5 jumpi
+    dup5 0x0 mstore 0x20 0x0 revert
+    ok5:
+}
+*/
+
+
+#define test TEST_PUSH_STACK1() = {
+  0x1111
+  PUSH_STACK()
+  0x0 mload 0x20 eq ok1 jumpi 
+  0xE1 0x0 mstore 0x20 0x0 revert 
+
+  ok1: 
+  0x20 mload 0x1111 eq ok2 jumpi
+  0xE2 0x0 mstore 0x20 0x0 revert 
+  ok2:
+
+  //dup1 0x0 mstore 0x20 0x0 revert 
+
+}
+
+
+#define test TEST_POP_STACK1() = {
+  0x1111
+  PUSH_STACK()
+  POP_STACK()
+  0x1111 eq ok0 jumpi
+  0xE0 0x0 mstore 0x20 0x0 revert 
+  ok0:
+
+  0x0 mload 0x0 eq ok1 jumpi 
+  0xE1 0x0 mstore 0x20 0x0 revert 
+
+  ok1: 
+  0x20 mload 0x1111 eq ok2 jumpi
+  0xE2 0x0 mstore 0x20 0x0 revert 
+  ok2:
+
+  //dup1 0x0 mstore 0x20 0x0 revert 
+
+}
+
+
+
+#define test TEST_POP_STACK2() = {
+  0x2222
+  PUSH_STACK()
+  0x1111
+  PUSH_STACK()
+
+  POP_STACK()
+  0x1111 eq ok0 jumpi
+  0xE0 0x0 mstore 0x20 0x0 revert 
+  ok0:
+
+  0x0 mload 0x20 eq ok1 jumpi 
+  0xE1 0x0 mstore 0x20 0x0 revert 
+  ok1:
+
+  POP_STACK()
+  0x2222 eq ok2 jumpi
+  0xE0 0x0 mstore 0x20 0x0 revert 
+  ok2:
+
+  0x0 mload 0x0 eq ok3 jumpi 
+  0xE1 0x0 mstore 0x20 0x0 revert 
+  ok3:
+
+}
+
+#define test TEST_GET_STACK_REL1() = {
+  0x2222
+  PUSH_STACK()
+  0x1111
+  PUSH_STACK()
+
+  0x0
+  GET_STACK_REL()
+  //dup1 0x0 mstore 0x20 0x0 revert 
+  0x1111 eq ok0 jumpi
+  0xE0 0x0 mstore 0x20 0x0 revert 
+  ok0:
+
+  0x1
+  GET_STACK_REL()
+  0x2222 eq ok1 jumpi
+  0xE1 0x0 mstore 0x20 0x0 revert 
+  ok1:
+
+
+}
+
+#define test TEST_GET_STACK1() = {
+  0x2222
+  PUSH_STACK()
+  0x1111
+  PUSH_STACK()
+
+  0x0
+  GET_STACK()
+  //dup1 0x0 mstore 0x20 0x0 revert 
+  0x2222 eq ok0 jumpi
+  0xE0 0x0 mstore 0x20 0x0 revert 
+  ok0:
+
+  0x1
+  GET_STACK()
+  0x1111 eq ok1 jumpi
+  0xE1 0x0 mstore 0x20 0x0 revert 
+  ok1:
+
+
+}
+
+
+#define test TEST_SET_STACK1() = {
+  0x2222
+  PUSH_STACK()
+  0x1111
+  PUSH_STACK()
+
+  0x1111
+  0x0
+  SET_STACK()
+
+  0x2222
+  0x1
+  SET_STACK()
+
+
+  0x0
+  GET_STACK()
+  //dup1 0x0 mstore 0x20 0x0 revert 
+  0x1111 eq ok0 jumpi
+  0xE0 0x0 mstore 0x20 0x0 revert 
+  ok0:
+
+  0x1
+  GET_STACK()
+  0x2222 eq ok1 jumpi
+  0xE1 0x0 mstore 0x20 0x0 revert 
+  ok1:
+
+
+}
+
+
+#define test TEST_GET_COUNTER1() = {
+  0x2222
+  PUSH_STACK()
+  0x1111
+  PUSH_STACK()
+
+
+  GET_COUNTER()
+  0x2 eq ok0 jumpi
+  0xE0 0x0 mstore 0x20 0x0 revert 
+  ok0:
+}

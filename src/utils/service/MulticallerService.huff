@@ -1,0 +1,133 @@
+
+// @notice Fetches the token balance of the caller for the provided token
+/// @notice Stack Input: [token]
+/// @notice Stack Output: [balance, token]
+#define constant _WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
+
+
+#define macro STATIC_CALL_TOKEN_BALANCE_MINUS_ONE() = takes (1) returns (2) {
+    // Static Call token.balanceOf(address(this))
+    0x100 mload //[mem_offset, token]
+    __FUNC_SIG(balanceOf) dup2 mstore       // [mem_offset,token]
+    address dup2 0x20 add mstore                     // [mem_offset,token]
+
+    0x20                                    // [retSize, mem_offset, mem_offset, token]
+    dup2                                    // [retOffset, retSize, mem_offset, token]
+    0x24                                    // [argSize, retOffset, retSize, mem_offset, token]
+    dup4 0x1c add                                   // [argOffset, argSize, retOffset, retSize, mem_offset, token]
+    dup6                                    // [to, argOffset, argSize, retOffset, retSize, mem_offset, token]
+    
+    gas                                     // [gas, to, argOffset, argSize, retOffset, retSize, mem_offset, token]
+    staticcall                              // [success, mem_offset, token]
+
+    // Validate successful call
+    iszero error jumpi                      // [mem_offset, token]
+    mload                                   // [balance, token]
+    dup1 iszero skip jumpi
+    0x01 swap1 sub                          // [(balance - 1), token]
+    skip:                                   // [(balance - 1) | 0, token]
+}
+
+
+
+
+/// @notice Receive profits from contract
+#define macro RECOVER_ERC20() = takes (0) returns (0) {
+    0x04 calldataload                       // [token]
+
+    // Get the balance of this contract
+    STATIC_CALL_TOKEN_BALANCE_MINUS_ONE(error)        // [balance, token]
+
+    // Call token.transfer(msg.sender, balance)
+    __FUNC_SIG(transfer) 0x00 mstore    // [balance, token]
+    caller 0x20 mstore                      // [balance, token]
+    0x40 mstore                             // [token]
+
+    0x00                                    // [retSize, token]
+    0x00                                    // [retOffset, retSize, token]
+    0x44                                    // [argSize, retOffset, retSize, token]
+    0x1c                                    // [argOffset, argSize, retOffset, retSize, token]
+    dup3                                    // [value, argOffset, argSize, retOffset, retSize, token]
+    dup6                                    // [to, value, argOffset, argSize, retOffset, retSize, token]
+    gas                                     // [gas, to, value, argOffset, argSize, retOffset, retSize, token]
+    call                                    // [success, token]
+
+    // Validate call success
+    iszero error jumpi stop
+}
+
+
+
+
+// @notice Withdraws eth from this contract to the caller
+#define macro RECOVER_ETH() = takes (0) returns (0) {
+    // Get the balance of this contract
+    0x00                                    // [retSize]
+    dup1                                    // [retOffset, retSize]
+    dup1                                    // [argSize, retOffset, retSize]
+    dup1                                    // [argOffset, argSize, retOffset, retSize]
+    selfbalance                             // [balance, argOffset, argSize, retOffset, retSize]
+    caller                                  // [caller, balance, argOffset, argSize, retOffset, retSize]
+    0x1388 gas sub                          // [(gas - 5000), caller, balance, argOffset, argSize, retOffset, retSize]
+    call                                    // [success]
+
+    // Validate call success
+    iszero error jumpi stop
+}
+
+
+/// @notice Receive profits from contract
+#define macro TRANSFER_ERC20() = takes (3) returns (0) {
+    0x100 mload
+    __FUNC_SIG(transfer) dup2 mstore    // [to, value, token]
+    swap1 
+    dup2 0x20 add mstore
+    swap1 
+    dup2 0x40 add mstore
+     
+    
+    // [value, token]
+    0x00                                    // [retSize, token]
+    0x00                                    // [retOffset, retSize, token]
+    0x44                                    // [argSize, retOffset, retSize, token]
+    dup4 0x1c add                                    // [argOffset, argSize, retOffset, retSize, token]
+ 
+    0x0                                     // [value, argOffset, argSize, retOffset, retSize, token]
+    dup7                                    // [to, value, argOffset, argSize, retOffset, retSize, token]
+    gas                                     // [gas, to, value, argOffset, argSize, retOffset, retSize, token]
+    call                                    // [success, token]
+    pop
+    pop
+    pop
+
+    // Validate call success
+    //iszero error jumpi stop
+}
+
+/// @notice Receive profits from contract
+#define macro WITHDRAW_WETH() = takes (1) returns (0) {
+    0x100 mload
+    __FUNC_SIG("withdraw(uint256)") dup2 mstore    // [value]
+    swap1 
+    dup2 0x20 add 
+    
+    mstore
+    0x00                                    // [retSize, token]
+    0x00                                    // [retOffset, retSize, token]
+    0x24                                    // [argSize, retOffset, retSize, token]
+    dup4 0x1c add                                   // [argOffset, argSize, retOffset, retSize, token]
+    //dup1 0x0 mstore 0x20 0x0 revert // RevertDebug
+
+    0x0                                     // [value, argOffset, argSize, retOffset, retSize, token]
+    [_WETH_ADDRESS]                         // [to, value, argOffset, argSize, retOffset, retSize, token]
+    gas                                     // [gas, to, value, argOffset, argSize, retOffset, retSize, token]
+    call                                    // [success, token]
+    pop
+    pop
+
+    // Validate call success
+    //iszero error jumpi stop
+}
+
+
+

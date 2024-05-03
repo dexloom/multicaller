@@ -1,0 +1,27 @@
+#include "VMCallStack.huff"
+
+#define macro DO_DELEGATE_CALL() = takes(1) returns (1) {
+    dup1                              // [prefix, prefix, offset]
+    [_ADDRESS_MASK] and  // [target, prefix, offset]
+    dup2                 // [prefix, target, prefix, offset]
+    0xA0 shr             // [prefix >> 0xA0, target, prefix, offset]        
+    [_CALL_LENGTH_MASK] and //[length, target, prefix, offset]
+
+    0x00        //[0, length, target, prefix, offset]            
+    0x00        //[0, 0, length, target, prefix, offset]               
+    dup3        //[length, 0, 0, length, target, prefix, offset]   
+    0x20        //[0x20, length, 0, 0, length, target, prefix, offset]
+    dup8        //[offset, 0x20, length, 0, 0, length, target, prefix, offset]
+    add         //[offset + 0x20, length, 0, 0, length, target, prefix, offset]
+    dup6        //[target, offset + 0x20, length, 0, 0, length, target, prefix, offset]
+    gas         //[gas, target, offset + 0x20, length, 0, 0, length, target, prefix, offset]
+    delegatecall  //[success, length, target, prefix, offset]
+    iszero error jumpi   //[length, target, prefix, offset]
+    swap3 //[target, prefix, offset, length]
+    pop //[prefix, offset, length]
+    pop //[offset, length]
+    0xC8 shr
+    0xFFFFFF and
+    PUSH_CALL_RETURN()
+    0x20 add
+}

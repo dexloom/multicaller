@@ -1,0 +1,71 @@
+#define macro MEM_COPY() = takes(3) returns(0) {
+  //[dest, src, len]
+  wholewords:
+  dup3 iszero iszero cnt jumpi
+  pop pop exit jump
+  cnt:
+  dup3 0x20 gt rest jumpi 
+  //[dest, src, len]
+  dup2 mload //[word, dest, src, len]
+  dup2 mstore // [newdest, src, len]
+  0x20 add
+  swap1 0x20 add     // [newsrc, newdest, len]
+  swap2 0x20 swap1 sub // [newlen, newdest, newsrc]
+  swap2 swap1 // [newdest, newsrc, newsrc]
+  //[dest, src, len]
+  wholewords jump
+
+  rest:
+
+  swap1 mload //[word, dest, len]
+  0x1
+  dup4 0x3 shl shl 0x1 swap1 sub 
+  
+  dup1 not 
+
+  swap2 // [word, mask, negmask, dest, len]
+
+  and // // [newword, negmask, dest, len]
+  swap1 // [negmask, newword, dest, len]
+  dup3 mload // [destword, negmask, newword, dest, len]
+  and // // [newdestword, newword, dest, len]
+  or // [newdestword^newword, dest, len]
+
+  swap1 mstore // [len]
+
+  exit:
+  pop
+
+}
+
+#define macro MEM_COPY_WORDS() = takes(3) returns(0) {
+  //[dest, src, len]
+  wholewords:
+  dup3 iszero iszero cnt jumpi
+  pop pop exit jump
+  cnt:
+  dup3 0x20 gt rest jumpi 
+  //[dest, src, len]
+  dup2 mload //[word, dest, src, len]
+  dup2 mstore // [newdest, src, len]
+  0x20 add
+  swap1 0x20 add     // [newsrc, newdest, len]
+  swap2 0x20 swap1 sub // [newlen, newdest, newsrc]
+  swap2 swap1 // [newdest, newsrc, newsrc]
+  //[dest, src, len]
+  wholewords jump
+
+  rest:
+
+  swap1 mload //[word, dest, len]
+  0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff 
+  dup4 0x3
+  shl 0x100 sub //[ bits,0x1, 0x1 word, dest, len]
+  shl //sub // [mask, word, dest, len]
+  and // // [newword, dest, len]
+  swap1 mstore // [len]
+
+  exit:
+  pop
+
+}
