@@ -7,7 +7,7 @@ import "forge-std/console.sol";
 import "../src/ERC20.sol";
 import "../src/interfaces/dydx/ISoloMargin.sol";
 
-address constant Operator = address(0x0000000000112233445566778899112233445566);
+address constant Operator = address(0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266);
 
 contract Helper {
     uint256 public constant VALUE_CALL_SELECTOR =  0x7ffa;

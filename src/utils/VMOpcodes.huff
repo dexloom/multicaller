@@ -1,4 +1,4 @@
-s#include "Error.huff"
+#include "Error.huff"
 
 #define macro OPCODE(op) = takes(0) returns(0) {
         pop

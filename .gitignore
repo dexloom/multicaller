@@ -22,7 +22,5 @@ flattened.txt
 broadcast
 
 lib/
-out/
-cache/
 
 yarn.lock

@@ -8,6 +8,7 @@ import "forge-std/console.sol";
 import "../src/ERC20.sol";
 import "../src/interfaces/dydx/ISoloMargin.sol";
 import "./Interface.sol";
+import "./Helper.sol";
 
 
 contract MulticallerSwapStepMergeTest is Test {

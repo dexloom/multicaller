@@ -1,4 +1,3 @@
-
 #define macro DO_CALL() = takes(3) returns (1) {
     //[prefix, offset, value]
      dup1                              // [prefix, prefix, offset, value]

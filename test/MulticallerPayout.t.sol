@@ -30,8 +30,6 @@ contract MulticallerPayoutTest is Test, Helper {
         vm.prank(0x741AA7CFB2c7bF2A1E7D4dA2e3Df6a56cA4131F3, 0x741AA7CFB2c7bF2A1E7D4dA2e3Df6a56cA4131F3);
         weth.transfer(address(multicaller), 1000000);
         vm.coinbase(address(0x333777));
-
-
     }
 
 
