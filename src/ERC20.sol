@@ -20,7 +20,7 @@ contract ERC20 {
       console.log("withdraw", value);
     }
 
-    function revert() public {
+    function revertfx() public {
       require( msg.sender == address(0), "RVC");
     }
 

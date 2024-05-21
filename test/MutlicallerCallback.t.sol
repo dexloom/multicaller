@@ -13,31 +13,9 @@ import "../src/ERC20.sol";
 import "../src/mocks/Uni2Pool.sol";
 import "../src/mocks/Uni3Pool.sol";
 
-contract MulticallerCallbackTest is Test, Helper {
-    MultiCaller public multicaller;
-    ERC20 public erc20Mock;
-    ERC20 public erc20Mock2;
-    UniswapV2Pair public uni2Mock;
-    UniswapV3Pool public uni3Mock;
-
-            
-    /// @dev Setup the testing environment.
-    function setUp() public {
-        erc20Mock = new ERC20();
-        erc20Mock2 = new ERC20();
-        uni2Mock = new UniswapV2Pair();
-        uni3Mock = new UniswapV3Pool();
-
-        console.log(address(erc20Mock));
-        console.log(address(erc20Mock2));
-        multicaller = MultiCaller(HuffDeployer.deploy("Multicaller"));
-        console.log(address(multicaller));
-        vm.deal(address(multicaller), 1000000);
-        vm.startPrank(Operator, Operator);
-    }
+contract MulticallerCallbackTest is Test, Helper, TestHelper {
 
 
-    
     function testCallErcInsideUni2CallbackArray2() public {
         console.log("testCallErcInsideUni2CallbackArray");
         address addr = address(0x1122334455667788990011223344556677889900);

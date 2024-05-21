@@ -97,6 +97,7 @@
     [_CALL_VALUE_MASK] and             // [value, offset]
 
 
+
     dup1 iszero empty_op_dnc jumpi
     dup1 [_ZERO_VALUE_CALL_SELECTOR] eq do_zero_call jumpi
     dup1 [_STATIC_CALL_SELECTOR] eq do_static_call jumpi

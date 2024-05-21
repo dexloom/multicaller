@@ -6,8 +6,72 @@ import "forge-std/console.sol";
 
 import "../src/ERC20.sol";
 import "../src/interfaces/dydx/ISoloMargin.sol";
+import "./Interface.sol";
 
-address constant Operator = address(0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266);
+import "../src/mocks/Uni2Pool.sol";
+import "../src/mocks/Uni3Pool.sol";
+import "../src/mocks/Pancake3Pool.sol";
+import "../src/mocks/ShibaswapPool.sol";
+
+
+
+address constant Operator = address(0x16Df4b25e4E37A9116eb224799c1e0Fb17fd8d30);
+address constant WETH = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
+address constant USDT = address(0xdAC17F958D2ee523a2206206994597C13D831ec7);
+
+
+contract TestHelper is Test {
+    MultiCaller public multicaller;
+    ERC20 public weth;
+    ERC20 public usdt;
+    ERC20 public erc20Mock;
+    ERC20 public erc20Mock2;
+    UniswapV2Pair public uni2Mock;
+    UniswapV3Pool public uni3Mock;
+    PancakeV3Pool public pancake3Mock;
+    ShibaswapV2Pair public shibaMock;
+
+ 
+    function setUp() public {
+        multicaller = MultiCaller(HuffDeployer.deploy("Multicaller"));
+        bytes memory code = address(multicaller).code;
+        address targetAddr = address(0x7878787878787878787878787878787878787878);
+        vm.etch(targetAddr, code);
+        multicaller = MultiCaller(address(0x7878787878787878787878787878787878787878));
+
+        console.log("Multicaller:", address(multicaller));
+        vm.deal(address(multicaller), 0.5 ether);
+
+        uni2Mock = new UniswapV2Pair();
+        uni3Mock = new UniswapV3Pool();
+        shibaMock = new ShibaswapV2Pair();
+        pancake3Mock = new PancakeV3Pool();
+
+        erc20Mock = new ERC20();
+        erc20Mock2 = new ERC20();
+
+
+        donate_weth(address(multicaller));
+        donate_usdt(address(multicaller));
+
+        weth = ERC20(WETH);
+        usdt = ERC20(USDT);
+
+        vm.startPrank(Operator,Operator);
+    }
+
+    function donate_weth(address to) public {
+        ERC20 weth = ERC20(WETH);
+        vm.prank(0x8EB8a3b98659Cce290402893d0123abb75E3ab28);
+        weth.transfer(to, 1.0 ether);
+    }
+
+    function donate_usdt(address to) public  {
+        ERC20 usdt = ERC20(USDT);
+        vm.prank(0xF977814e90dA44bFA03b6295A0616a897441aceC);
+        usdt.transfer(to, 1_000_000_000); // 1k
+    }
+}
 
 contract Helper {
     uint256 public constant VALUE_CALL_SELECTOR =  0x7ffa;
@@ -72,6 +136,8 @@ contract Helper {
     uint8 public constant OPCODE_PCT = 0x51;
 
 
+
+
     function removeSignature(bytes memory data) public pure returns (bytes memory) {
         require(data.length >= 0x44, "Data must include function signature");
         bytes memory result = new bytes(data.length - 0x44);
@@ -86,13 +152,13 @@ contract Helper {
 
     function mergeData(address callee, bytes memory data, uint256 callSelector, uint256 presetStackParam, uint256 storeStackResult) public pure returns (bytes memory) {
         if( callSelector == CALCULATION_CALL_SELECTOR || callSelector == INTERNAL_CALL_SELECTOR ) {
-            uint96 callParams;
-            callParams |= uint96(data.length);
-            callParams |= (uint96(presetStackParam) << 16);
-            callParams |= (uint96(storeStackResult) << 40);
+            uint96 callsParams;
+            callsParams |= uint96(data.length);
+            callsParams |= (uint96(presetStackParam) << 16);
+            callsParams |= (uint96(storeStackResult) << 40);
 
-            callParams |= (uint96(callSelector) << 80);
-            return abi.encodePacked(callParams, data);
+            callsParams |= (uint96(callSelector) << 80);
+            return abi.encodePacked(callsParams, data);
 
         }
         uint256 callParams = uint256(uint160(callee));
