@@ -1,6 +1,7 @@
 #include "./utils/service/MulticallerService.huff"
 #include "./utils/internalcalls/Flashbots.huff"
 #include "./utils/internalcalls/Uni2.huff"
+#include "./utils/Log.huff"
 
 /*
  function transferTipsMinBalanceNoPayout(address token, uint256 min_balance, uint256 tips) external payable;
@@ -71,6 +72,7 @@
 */
 
 
+
 #define macro DO_INTERNAL_CALL() = takes(1) returns (1) {
     // [prefix, offset]
     dup1                     // [prefix, prefix, offset]
@@ -93,6 +95,9 @@
     dup1 __FUNC_SIG("uni2GetInAmountFrom1Comms(address,uint256,uint256)")      eq uni2getinamount1comms  jumpi
     dup1 __FUNC_SIG("uni2GetOutAmountFrom0Comms(address,uint256,uint256)")     eq uni2getoutamount0comms jumpi
     dup1 __FUNC_SIG("uni2GetOutAmountFrom1Comms(address,uint256,uint256)")     eq uni2getoutamount1comms jumpi
+    dup1 __FUNC_SIG("logStack()") eq logstack jumpi
+    dup1 __FUNC_SIG("logStackOffset(uint256)") eq logstack_offset jumpi
+
     0x9999 0x0 mstore 0x20 0x0 revert // RevertDebug
     
     uni2getinamount0:
@@ -166,7 +171,22 @@
         dup4
         0xC add
         TRANSFER_TIPS_MIN_BALANCE_WETH()
-        //dup1 0x0 mstore 0x20 0x0 revert
+        exit jump
+
+    logstack:
+        pop // [length, prefix, offset]
+        dup4
+        0xC add
+        LOG_STACK()
+        pop
+        exit jump
+    logstack_offset:
+        pop // [length, prefix, offset]
+        dup4
+        0xC add
+        LOG_PARSE_IDX()
+        LOG_STACK_OFFSET()
+        pop
 
 
     exit:

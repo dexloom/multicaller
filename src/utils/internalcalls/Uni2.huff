@@ -1,3 +1,5 @@
+#include "../Log.huff"
+
 #define macro UNI2_RESERVES() = takes(1) returns(2) {
     // Static Call token.balanceOf(address(this))
     0x100 mload // [mem_offset, pool]
