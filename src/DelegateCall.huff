@@ -1,4 +1,4 @@
-#include "VMCallStack.huff"
+//#include "./utils/VMCallStack.huff"
 
 #define macro DO_DELEGATE_CALL() = takes(1) returns (1) {
     dup1                              // [prefix, prefix, offset]

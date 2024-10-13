@@ -48,7 +48,7 @@ contract MulticallerCallbackTest is Test, Helper, TestHelper {
         //assertEq(amount1, 0x300);
     }
 
-    function testCallErcInsideUni2QuickTransfer() public {
+    function testCallErcInsideUni2QuickTransfer1() public {
         console.log("testCallErcInsideUni2CallbackArray");
         address addr = address(0x1122334455667788990011223344556677889900);
         address addr2 = address(0x2233445566778899001122334455667788990011);

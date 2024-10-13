@@ -1,9 +1,10 @@
 #include "./utils/VMStack.huff"
-#include "./utils/VMCallStack.huff"
+//#include "./utils/VMCallStack.huff"
 #include "./utils/BalancerV2.huff"
 #include "./utils/service/Uni2Service.huff"
 #include "./utils/service/Uni3Service.huff"
 #include "./utils/Owner.huff"
+#include "./utils/VMCallStack.huff"
 #include "CalculationCall.huff"
 #include "Call.huff"
 #include "StaticCall.huff"
@@ -179,7 +180,7 @@
 
         dup2 //[len, counter, len]
         dup2 //[counter, len, counter, len]
-       lt nextdc jumpi
+        lt nextdc jumpi
 
     exit:
         pop
@@ -241,8 +242,11 @@
         execdocalls jump
 
 
-        uni2_callback_found:
-        dup1 calldataload
+    uni2_callback_found:
+
+        dup1
+        0x4 add 
+        calldataload
         
         0x14 eq uni2quick jumpi
  
@@ -355,6 +359,7 @@
 
 
     uni2quick:
+
         UNI2_QUICK_RETURN_IN_AMOUNT()
         0x0 0x0 return
     uni3quick:

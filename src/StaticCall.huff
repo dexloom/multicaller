@@ -1,4 +1,4 @@
-#include "VMCallStack.huff"
+//#include "./utils/VMCallStack.huff"
 
 #define macro DO_STATIC_CALL() = takes(2) returns (1) {
     dup1                              // [prefix, prefix, offset]
