@@ -1,1 +1,14 @@
-{}
+{
+  "scripts": {
+    "lint": "npx solhint --fix --noPrompt {script,src,test}/**/*.sol",
+    "lint-check": "npx solhint {script,src,test}/**/*.sol",
+    "fmt": "npx prettier --write --plugin=prettier-plugin-solidity '{script,src,test}/**/*.sol'",
+    "fmt-check": "npx prettier --check --plugin=prettier-plugin-solidity '{script,src,test}/**/*.sol'"
+  },
+  "devDependencies": {
+    "prettier": "3.3.3",
+    "prettier-plugin-solidity": "1.4.1",
+    "solhint": "5.0.3",
+    "solhint-plugin-prettier": "0.1.0"
+  }
+}

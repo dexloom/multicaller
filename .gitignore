@@ -9,8 +9,9 @@ node_modules/
 cache/
 out/
 
-# Vscode
+# IDE's
 .vscode/
+.idea
 
 # huffc artifacts
 artifacts
@@ -21,6 +22,3 @@ flattened.txt
 # Ignore Broadcasts
 broadcast
 
-lib/
-
-yarn.lock

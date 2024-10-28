@@ -1,0 +1,53 @@
+name: Multicaller
+
+on:
+  push:
+    branches: [main]
+  pull_request_target:
+    branches: [main]
+
+jobs:
+  test:
+    name: make test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      MAINNET_HTTP: ${{ secrets.MAINNET_HTTP }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+      - uses: huff-language/huff-toolchain@v2
+        with:
+          version: nightly
+
+      - run: forge install
+      - run: anvil --fork-url $MAINNET_HTTP &
+      - run: make test
+
+  fmt-check:
+    name: make fmt-check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - run: npm install --save-dev
+      - run: make fmt-check
+
+  lint-check:
+    name: make lint-check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - run: npm install --save-dev
+      - run: make lint-check

@@ -42,8 +42,6 @@ library Types {
     }
 }
 
-
-
 library Actions {
     enum ActionType {
         Deposit, // supply tokens
@@ -57,9 +55,17 @@ library Actions {
         Call // send arbitrary data to an address
     }
 
-    enum AccountLayout {OnePrimary, TwoPrimary, PrimaryAndSecondary}
+    enum AccountLayout {
+        OnePrimary,
+        TwoPrimary,
+        PrimaryAndSecondary
+    }
 
-    enum MarketLayout {ZeroMarkets, OneMarket, TwoMarkets}
+    enum MarketLayout {
+        ZeroMarkets,
+        OneMarket,
+        TwoMarkets
+    }
 
     struct ActionArgs {
         ActionType actionType;
@@ -92,8 +98,6 @@ library Actions {
         Account.Info accountTwo;
         uint256 market;
     }
-
-
 
     struct TradeArgs {
         Types.AssetAmount amount;
@@ -128,13 +132,11 @@ library Actions {
     }
 }
 
-
 library Decimal {
     struct D256 {
         uint256 value;
     }
 }
-
 
 library Interest {
     struct Rate {
@@ -154,11 +156,9 @@ interface ISoloMargin {
         bool trusted;
     }
 
-
-    function getMarketTokenAddress(uint256 marketId)
-        external
-        view
-        returns (address);
+    function getMarketTokenAddress(
+        uint256 marketId
+    ) external view returns (address);
 
     function getNumMarkets() external view returns (uint256);
 
@@ -166,5 +166,4 @@ interface ISoloMargin {
         Account.Info[] memory accounts,
         Actions.ActionArgs[] memory actions
     ) external;
-
 }

@@ -13,8 +13,6 @@ interface IPancakeV3SwapCallback {
 }
 
 contract PancakeV3Pool {
-
-
     struct Slot0 {
         // the current price
         uint160 sqrtPriceX96;
@@ -45,17 +43,17 @@ contract PancakeV3Pool {
     ) public {
         int256 amount0;
         int256 amount1;
-        if(zeroForOne) {
+        if (zeroForOne) {
             amount0 = int256(amountSpecified);
             amount1 = -amount0 >> 1;
-        }else{
+        } else {
             amount1 = int256(amountSpecified);
             amount0 = -amount1 >> 1;
         }
-        IPancakeV3SwapCallback(msg.sender).pancakeV3SwapCallback(amount0, amount1, data);
-
+        IPancakeV3SwapCallback(msg.sender).pancakeV3SwapCallback(
+            amount0,
+            amount1,
+            data
+        );
     }
-
-
-
 }

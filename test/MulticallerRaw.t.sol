@@ -10,13 +10,6 @@ import "../src/interfaces/dydx/ISoloMargin.sol";
 import "./Interface.sol";
 import "./Helper.sol";
 
-
 contract MulticallerRawTest is Test, TestHelper {
-
-
-
-    function test_single() public {
-    }
-
-
+    function test_single() public {}
 }
