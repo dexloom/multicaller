@@ -4,27 +4,27 @@
 
 
 #define macro DO_INTERNAL_CALL() = takes(1) returns (1) {
-    //[prefix, offset]
-    dup1                              // [prefix, prefix, offset]
-    //[_ADDRESS_MASK] and  // [target, prefix, offset]
-    0xA0 shr             // [prefix >> 0xA0, target, prefix, offset]        
-    [_CALL_LENGTH_MASK] and //[length, target, prefix, offset]
+    // [prefix, offset]
+    dup1                     // [prefix, prefix, offset]
+    // [_ADDRESS_MASK] and   // [target, prefix, offset]
+    0xA0 shr                 // [prefix >> 0xA0, target, prefix, offset]
+    [_CALL_LENGTH_MASK] and  // [length, target, prefix, offset]
     dup3 
     0xC add
     mload 
     0xE0 shr //[selector, length, target, prefix, offset]
 
-    dup1 __FUNC_SIG("transferTipsMinBalanceNoPayout(address,uint256,uint256)") eq transfertipsnopayout jumpi
-    dup1 __FUNC_SIG("transferTipsMinBalance(address,uint256,uint256,address)") eq transfertips jumpi
-    dup1 __FUNC_SIG("transferTipsMinBalanceWETH(uint256,uint256,address)") eq transfertipsweth jumpi
-    dup1 __FUNC_SIG("uni2GetInAmountFrom0(address,uint256)") eq uni2getinamount0 jumpi
-    dup1 __FUNC_SIG("uni2GetInAmountFrom1(address,uint256)") eq uni2getinamount1 jumpi
-    dup1 __FUNC_SIG("uni2GetOutAmountFrom0(address,uint256)") eq uni2getoutamount0 jumpi
-    dup1 __FUNC_SIG("uni2GetOutAmountFrom1(address,uint256)") eq uni2getoutamount1 jumpi
-    dup1 __FUNC_SIG("uni2GetInAmountFrom0Comms(address,uint256,uint256)") eq uni2getinamount0comms jumpi
-    dup1 __FUNC_SIG("uni2GetInAmountFrom1Comms(address,uint256,uint256)") eq uni2getinamount1comms jumpi
-    dup1 __FUNC_SIG("uni2GetOutAmountFrom0Comms(address,uint256,uint256)") eq uni2getoutamount0comms jumpi
-    dup1 __FUNC_SIG("uni2GetOutAmountFrom1Comms(address,uint256,uint256)") eq uni2getoutamount1comms jumpi
+    dup1 __FUNC_SIG("transferTipsMinBalanceNoPayout(address,uint256,uint256)") eq transfertipsnopayout   jumpi
+    dup1 __FUNC_SIG("transferTipsMinBalance(address,uint256,uint256,address)") eq transfertips           jumpi
+    dup1 __FUNC_SIG("transferTipsMinBalanceWETH(uint256,uint256,address)")     eq transfertipsweth       jumpi
+    dup1 __FUNC_SIG("uni2GetInAmountFrom0(address,uint256)")                   eq uni2getinamount0       jumpi
+    dup1 __FUNC_SIG("uni2GetInAmountFrom1(address,uint256)")                   eq uni2getinamount1       jumpi
+    dup1 __FUNC_SIG("uni2GetOutAmountFrom0(address,uint256)")                  eq uni2getoutamount0      jumpi
+    dup1 __FUNC_SIG("uni2GetOutAmountFrom1(address,uint256)")                  eq uni2getoutamount1      jumpi
+    dup1 __FUNC_SIG("uni2GetInAmountFrom0Comms(address,uint256,uint256)")      eq uni2getinamount0comms  jumpi
+    dup1 __FUNC_SIG("uni2GetInAmountFrom1Comms(address,uint256,uint256)")      eq uni2getinamount1comms  jumpi
+    dup1 __FUNC_SIG("uni2GetOutAmountFrom0Comms(address,uint256,uint256)")     eq uni2getoutamount0comms jumpi
+    dup1 __FUNC_SIG("uni2GetOutAmountFrom1Comms(address,uint256,uint256)")     eq uni2getoutamount1comms jumpi
     0x9999 0x0 mstore 0x20 0x0 revert // RevertDebug
     
     uni2getinamount0:
@@ -87,7 +87,7 @@
 
         exit jump
     transfertipsnopayout:
-        pop // [length,  prefix, offset] 
+        pop // [length, prefix, offset]
         dup4
         0xC add
         TRANSFER_TIPS_MIN_BALANCE_NO_PAYOUT()
@@ -102,9 +102,9 @@
 
 
     exit:
-    // [length, prefix, offset]
-    swap2 // [offset,  prefix, length]
-    pop // [ prefix, length]
-    pop // [ length]   
-    0xC add
+        // [length, prefix, offset]
+        swap2 // [offset,  prefix, length]
+        pop // [ prefix, length]
+        pop // [ length]
+        0xC add
 }

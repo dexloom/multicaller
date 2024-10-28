@@ -5,13 +5,13 @@ import "foundry-huff/HuffDeployer.sol";
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
 
-import "../src/interfaces/dydx/ISoloMargin.sol";
+import "./interfaces/dydx/ISoloMargin.sol";
 import "./Helper.sol";
 import "./Interface.sol";
 
-import "../src/ERC20.sol";
-import "../src/mocks/Uni2Pool.sol";
-import "../src/mocks/Uni3Pool.sol";
+import "./mocks/ERC20.sol";
+import "./mocks/Uni2Pool.sol";
+import "./mocks/Uni3Pool.sol";
 
 contract MulticallerCallbackTest is Test, Helper, TestHelper {
     function testCallErcInsideUni2CallbackArray2() public {

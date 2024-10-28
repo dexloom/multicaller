@@ -5,15 +5,15 @@ import "foundry-huff/HuffDeployer.sol";
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
 
-import "../src/interfaces/dydx/ISoloMargin.sol";
+import "./interfaces/dydx/ISoloMargin.sol";
 import "./Helper.sol";
 import "./Interface.sol";
 
-import "../src/ERC20.sol";
-import "../src/mocks/Pancake3Pool.sol";
-import "../src/mocks/ShibaswapPool.sol";
-import "../src/mocks/Uni2Pool.sol";
-import "../src/mocks/Uni3Pool.sol";
+import "./mocks/ERC20.sol";
+import "./mocks/Pancake3Pool.sol";
+import "./mocks/ShibaswapPool.sol";
+import "./mocks/Uni2Pool.sol";
+import "./mocks/Uni3Pool.sol";
 
 contract MulticallerCallback2Test is Test, Helper {
     MultiCaller public multicaller;

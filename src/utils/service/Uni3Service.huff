@@ -9,11 +9,10 @@
     exitqr3 jump
     
     amount1v3:
-    pop
-    0x24 calldataload
+        pop
+        0x24 calldataload
 
     exitqr3:
-    caller 
-    TRANSFER_ERC20()
-    
- }
+        caller
+        TRANSFER_ERC20()
+}

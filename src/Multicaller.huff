@@ -17,31 +17,10 @@
 
 #define function isValidSignature(bytes calldata,bytes calldata) pure returns (bytes4)
 #define function isValidSignature(bytes32,bytes calldata) pure returns (bytes4)
-#define function uniswapV3SwapCallback(int256 , int256 , bytes calldata) nonpayable returns()
+#define function uniswapV3SwapCallback(int256,int256,bytes calldata) nonpayable returns()
 #define function receiveFlashLoan(address[],uint256[],uint256[],bytes calldata) nonpayable returns()
 #define function transferTipsMinBalance(address,uint256,uint256,address) payable returns()
 #define function transferTipsMinBalanceWETH(uint256,uint256,address) payable returns()
-
-
-
-#define constant _OWNER = FREE_STORAGE_POINTER()
-#define constant _VALUE_LOCATION = FREE_STORAGE_POINTER()
-#define constant _ADDRESS_MASK     =        0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff
-#define constant _CALL_LENGTH_MASK =            0x000000000000000000000000000000000000000000000000000000000000ffff
-
-#define constant _CALL_VALUE_MASK =             0x000000000000000000000000000000000000000000000000000000000000ffff
-
-#define constant _VALUE_CALL_SELECTOR =          0x0000000000000000000000000000000000000000000000000000000000007ffa
-#define constant _CALCULATION_CALL_SELECTOR =   0x0000000000000000000000000000000000000000000000000000000000007ffb
-#define constant _ZERO_VALUE_CALL_SELECTOR =          0x0000000000000000000000000000000000000000000000000000000000007ffc
-#define constant _INTERNAL_CALL_SELECTOR =      0x0000000000000000000000000000000000000000000000000000000000007ffd
-#define constant _STATIC_CALL_SELECTOR =        0x0000000000000000000000000000000000000000000000000000000000007ffe
-#define constant _DELEGATE_CALL_SELECTOR =      0x0000000000000000000000000000000000000000000000000000000000007fff
-
-#define constant _ERC1271_MAGICVALUE = 0x20c13b0b
-#define constant _ERC1271_MAGICVALUE_BYTES32 = 0x1626ba7e
-
-
 
 // bytes4 internal constant ERC20_TRANSFER_ID = 0xa9059cbb;
 #define function transfer(address, uint256) nonpayable returns ()
@@ -50,17 +29,284 @@
 #define function balanceOf(address) view returns (uint256)
 #define function transfer(address,uint256) nonpayable returns ()
 
+#define constant _OWNER                      = FREE_STORAGE_POINTER()
+#define constant _VALUE_LOCATION             = FREE_STORAGE_POINTER()
+#define constant _ADDRESS_MASK               = 0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff
+#define constant _CALL_LENGTH_MASK           = 0x000000000000000000000000000000000000000000000000000000000000ffff
+#define constant _CALL_VALUE_MASK            = 0x000000000000000000000000000000000000000000000000000000000000ffff
+#define constant _VALUE_CALL_SELECTOR        = 0x0000000000000000000000000000000000000000000000000000000000007ffa
+#define constant _CALCULATION_CALL_SELECTOR  = 0x0000000000000000000000000000000000000000000000000000000000007ffb
+#define constant _ZERO_VALUE_CALL_SELECTOR   = 0x0000000000000000000000000000000000000000000000000000000000007ffc
+#define constant _INTERNAL_CALL_SELECTOR     = 0x0000000000000000000000000000000000000000000000000000000000007ffd
+#define constant _STATIC_CALL_SELECTOR       = 0x0000000000000000000000000000000000000000000000000000000000007ffe
+#define constant _DELEGATE_CALL_SELECTOR     = 0x0000000000000000000000000000000000000000000000000000000000007fff
+#define constant _ERC1271_MAGICVALUE         = 0x20c13b0b
+#define constant _ERC1271_MAGICVALUE_BYTES32 = 0x1626ba7e
+
+
+#define macro CONSTRUCTOR() = takes (0) returns (0) {}
+
+
+/* Main method can receive:
+
+ function doCalls(bytes calldata data) payable returns()
+  +------------+------+
+  | 0x28472417 | data |
+  +------------+------+
+       4B         var
+
+ function uniswapV3SwapCallback(int256 amount0Delta, int256 amount1Delta, bytes data) nonpayable returns()
+  +------------+--------------|--------------|------+
+  | 0xfa461e33 | amount0Delta | amount1Delta | data |
+  +------------+--------------|--------------|------+
+        4B           32B            32B         var
+
+ function pancakeV3SwapCallback(int256 amount0Delta, int256 amount1Delta, bytes data) nonpayable returns()
+  +------------+--------------|--------------|------+
+  | 0x23a69e75 | amount0Delta | amount1Delta | data |
+  +------------+--------------|--------------|------+
+        4B           32B            32B         var
+
+ function callFunction(address target, (address, uint256)[] memory, bytes data)
+  +------------+--------+----------------------+------+
+  | 0x8b418713 | target | (address, uint256)[] | data |
+  +------------+--------+----------------------+------+
+        4B         32B            var             var
+
+ function isValidSignature(bytes calldata data, bytes calldata signature) returns (bytes4 magicValue)
+  +------------+--------+-----------+
+  | 0x20c13b0b | data   | signature |
+  +------------+--------+-----------+
+        4B         var       var
+
+ function isValidSignature(bytes32 hash, bytes calldata signature) returns (bytes4 magicValue)
+  +------------+------+-----------+
+  | 0x1626ba7e | hash | signature |
+  +------------+------+-----------+
+        4B        32B      var
+
+ function receiveFlashLoan(address[] memory tokens, uint256[] memory amounts, uint256[] memory feeAmounts, bytes memory userData)
+  +------------+--------+---------+----------+------+
+  | 0xf04f2707 | assets | amounts | premiums | data |
+  +------------+--------+---------+----------+------+
+        4B         var      var        var      var
+
+ function lockAcquired(bytes calldata data)
+  +------------+------+
+  | 0xab6291fe | data |
+  +------------+------+
+        4B        var
+
+ function swapCallback(uint256 amount0Delta, uint256 amount1Delta, bytes data)
+  +------------+--------------|--------------|------+
+  | 0x923b8a2a | amount0Delta | amount1Delta | data |
+  +------------+--------------|--------------|------+
+        4B           32B            32B         var
+
+
+ function uniswapV2Call(address sender, uint256 amount0, uint256 amount1, bytes calldata data)
+  +------------+--------+---------+---------+------+
+  | 0x10d1e85c | sender | amount0 | amount1 | data |
+  +------------+--------+---------+---------+------+
+       4B         32B       32B       32B      var
+
+*/
+
+// Uncomment CHECK_OWNER macro call to enable tx.sender check
+#define macro MAIN() = takes (0) returns (1) {
+    //CHECK_OWNER()
+    calldatasize iszero retexit jumpi
+
+    // Identify which function is being called.
+    0x00 calldataload 0xE0 shr
+
+    dup1 __FUNC_SIG(doCalls)                                                 eq docalls          jumpi
+    dup1 __FUNC_SIG("uniswapV3SwapCallback(int256,int256,bytes)")            eq uni3docalls      jumpi
+    dup1 __FUNC_SIG("pancakeV3SwapCallback(int256,int256,bytes)")            eq uni3docalls      jumpi
+    dup1 __FUNC_SIG("callFunction(address,(address,uint256),bytes)")         eq dydxdocalls      jumpi
+    dup1 __FUNC_SIG("isValidSignature(bytes,bytes)")                         eq isvalidsig1      jumpi
+    dup1 __FUNC_SIG("isValidSignature(bytes32,bytes)")                       eq isvalidsig2      jumpi
+    dup1 __FUNC_SIG("receiveFlashLoan(address[],uint256[],uint256[],bytes)") eq balancer2docalls jumpi
+    dup1 __FUNC_SIG("lockAcquired(bytes)")                                   eq uni4docalls      jumpi
+    dup1 __FUNC_SIG("swapCallback(uint256,uint256,bytes)")                   eq maverickdocalls  jumpi
+
+    pop
+    0x64 calldataload // load with offset 100 bytes, data argument from uniswapV2Call
+    dup1 0x80 eq uni2_callback_found jumpi
+
+    pop
+    0x44 calldataload // load with offset 68 bytes, data argument from uniswapV3SwapCallback
+    dup1 0x60 eq uni3docalls jumpi
+
+    pop
+    0x4 calldataload
+    dup1 0x20 eq callback_found jumpi
+
+    pop
+    0x24 calldataload
+    dup1 0x40 eq callback_found jumpi
+
+    pop
+    0x84 calldataload
+    dup1 0xA0 eq callback_found jumpi
+
+    pop
+    retexit jump
+
+
+    callback_found:
+        0x4 add
+        execdocalls jump
+
+
+    uni2_callback_found:
+        dup1 calldataload
+
+        0x14 eq uni2quick jumpi
+
+        pop
+
+        0x24 calldataload
+        dup1 iszero uni2secondarg jumpi
+        0x20 mstore
+        uni2process jump
+        uni2secondarg:
+        pop
+        0x44 calldataload
+        0x20 mstore
+
+    uni2process:
+        0x20 0x0 mstore
+
+        0x64 calldataload
+        0x4 add
+
+        execdocalls jump
+
+    balancer2docalls:
+        pop
+        0x64 calldataload
+        0x4 add
+        DOCALLS()
+        BALANCER_FLASHLOAN()
+        exit jump
+
+    dydxdocalls:
+        pop
+        0x84
+        execdocalls jump
+
+    docalls:
+        pop
+        0x24
+        execdocalls jump
+
+    uni4docalls:
+        pop
+        0x4
+        execdocalls jump
+
+    maverickdocalls:
+        0x44 calldataload 0x4 add
+
+        dup1 calldataload
+
+        0x14 eq uni3quick jumpi
+        pop
+
+        0x4 calldataload
+
+        0x40 mstore
+        0x24 calldataload
+        0x20 mstore
+        uni3process jump
+
+    uni3docalls:
+        pop
+
+        0x44 calldataload 0x4 add
+
+        dup1 calldataload
+
+        0x14 eq uni3quick jumpi
+        pop
+
+
+        0x4 calldataload
+        0x0 dup2 slt uni3secondarg jumpi
+        0x40 mstore
+        0x24 calldataload
+        0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff mul
+        0x20 mstore
+        uni3process jump
+
+        uni3secondarg:
+        0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff mul
+        0x20 mstore
+        0x24 calldataload
+        0x40 mstore
+
+        uni3process:
+        0x40 0x0 mstore
+        0x44 calldataload
+        0x4 add
+
+    execdocalls:
+        DOCALLS()
+        0x20
+        0x0 mload
+
+        return
+        exit jump
+
+    isvalidsig1:
+        pop
+        [_ERC1271_MAGICVALUE]
+        0xE0 shl
+        0x0 mstore
+        0x20 0x0 return
+
+    isvalidsig2:
+        pop
+        [_ERC1271_MAGICVALUE_BYTES32]
+        0xE0 shl
+        0x0 mstore
+        0x20 0x0 return
+
+    uni2quick:
+        UNI2_QUICK_RETURN_IN_AMOUNT()
+        0x0 0x0 return
+
+    uni3quick:
+        UNI3_QUICK_RETURN_IN_AMOUNT()
+        0x0 0x0 return
+
+    retexit:
+        0x0 0x0 return
+
+    error:
+        returndatasize
+        0x0
+        0x0
+        returndatacopy
+        returndatasize
+        0x0
+        revert
+
+    exit:
+}
+
 
 /* Methods */
 #define macro SET_VALUE() = takes (0) returns (0) {
-    0x04 calldataload   // [value]
+    0x04 calldataload    // [value]
     [_VALUE_LOCATION]    // [ptr, value]
-    sstore              // []
+    sstore               // []
 }
 
 #define macro GET_VALUE() = takes (0) returns (0) {
     // Load value from storage.
-    [_VALUE_LOCATION]   // [ptr]
+    [_VALUE_LOCATION]    // [ptr]
     sload                // [value]
     0x77 add  
 
@@ -72,11 +318,8 @@
 }
 
 
-
-
 #define macro DECODE_NEXT_CALL() = takes(1) returns(1) {
-    //[offset, offset, buflen]
-    
+    // [offset, offset, buflen]
     dup1                              // [offset, offset]
     mload                             // [prefix, offset, offset, buflen]
     dup1
@@ -97,50 +340,49 @@
     [_CALL_VALUE_MASK] and             // [value, offset]
 
 
-
     dup1 iszero empty_op_dnc jumpi
-    dup1 [_ZERO_VALUE_CALL_SELECTOR] eq do_zero_call jumpi
-    dup1 [_STATIC_CALL_SELECTOR] eq do_static_call jumpi
+    dup1 [_ZERO_VALUE_CALL_SELECTOR]  eq do_zero_call        jumpi
+    dup1 [_STATIC_CALL_SELECTOR]      eq do_static_call      jumpi
     dup1 [_CALCULATION_CALL_SELECTOR] eq do_calculation_call jumpi
-    dup1 [_DELEGATE_CALL_SELECTOR] eq do_delegate_call jumpi
-    dup1 [_INTERNAL_CALL_SELECTOR] eq do_internal_call jumpi
-    dup1 [_VALUE_CALL_SELECTOR] eq do_value_call jumpi
-        valuecall:
-        pop //[prefix, offset, offset, len]
+    dup1 [_DELEGATE_CALL_SELECTOR]    eq do_delegate_call    jumpi
+    dup1 [_INTERNAL_CALL_SELECTOR]    eq do_internal_call    jumpi
+    dup1 [_VALUE_CALL_SELECTOR]       eq do_value_call       jumpi
+    valuecall:
+        pop                        // [prefix, offset, offset, len]
         dup1 0xB0 shr
-        0x7FFFFFFFFFFFFFFFFFFF and //[value, prefix, offset, offset, len]
-        swap2 swap1 // [prefix, offset, value, offset, len]
+        0x7FFFFFFFFFFFFFFFFFFF and // [value, prefix, offset, offset, len]
+        swap2 swap1                // [prefix, offset, value, offset, len]
 
-        DO_CALL() //
+        DO_CALL()
         exit_dnc jump
     do_zero_call:
-        pop //[prefix, offset, offset, len]
+        pop                        // [prefix, offset, offset, len]
         0x0 
-        swap2 swap1  //[prefix, offset, 0x0, offset, len]
-        DO_CALL() //[newlen, offset, len]
+        swap2 swap1                // [prefix, offset, 0x0, offset, len]
+        DO_CALL()                  // [newlen, offset, len]
 
         exit_dnc jump
     do_value_call:
-        pop //[prefix, offset, offset, len]
+        pop // [prefix, offset, offset, len]
         dup1 
         0xB0 shr
         0xFFFFFF and
         GET_STACK_WORD()
-        swap2 swap1  //[prefix, offset, value, offset, len]
-        DO_CALL() //[newlen, offset, len]
+        swap2 swap1      // [prefix, offset, value, offset, len]
+        DO_CALL()        // [newlen, offset, len]
 
         exit_dnc jump
     do_calculation_call:
-        pop //[prefix, offset, offset, len]
+        pop // [prefix, offset, offset, len]
 
-        DO_CALCULATION_CALL() //[newlen, offset, len]
+        DO_CALCULATION_CALL() // [newlen, offset, len]
         exit_dnc jump
     do_static_call:
-        pop //[prefix, offset, offset, len]
+        pop // [prefix, offset, offset, len]
         DO_STATIC_CALL()
         exit_dnc jump
     do_delegate_call:
-        pop //[prefix, offset, offset, len]
+        pop // [prefix, offset, offset, len]
         DO_DELEGATE_CALL()
         exit_dnc jump
     do_internal_call:
@@ -151,228 +393,34 @@
         pop
         0xFFFF add
     exit_dnc:
-
 }
 
 
- 
 #define macro DOCALLS() = takes(1) returns(0) {
     //[offset]
-    dup1 calldataload // [len, offset]
-    dup1 swap2 //swap2
+    dup1 calldataload   // [len, offset]
+    dup1 swap2          // swap2
  
-    0x20 add // [offset+20, len, offset]
+    0x20 add            // [offset+20, len, offset]
     0x120
-    calldatacopy // [offset]
+    calldatacopy        // [offset]
     msize 0x100 mstore
  
-    0x120 add // [len+100, ]
-    0x120 // [counter, len+100]
-    
+    0x120 add           // [len+100, ]
+    0x120               // [counter, len+100]
 
     nextdc:
-        dup1  // [counter, counter, len]
+        dup1               // [counter, counter, len]
 
-        DECODE_NEXT_CALL() //[newlen, counter, len]
+        DECODE_NEXT_CALL() // [newlen, counter, len]
  
-        add // [counter, len]
+        add                // [counter, len]
 
-        dup2 //[len, counter, len]
-        dup2 //[counter, len, counter, len]
+        dup2               // [len, counter, len]
+        dup2               // [counter, len, counter, len]
        lt nextdc jumpi
 
     exit:
         pop
         pop
-        
 }
-
-
-
-#define macro CONSTRUCTOR() = takes (0) returns (0) {
-}
-
-
-// Uncomment CHECK_OWNER macro call to enable tx.sender check
-#define macro MAIN() = takes (0) returns (1) {
-    //CHECK_OWNER()
-    calldatasize iszero retexit jumpi
-
-    // Identify which function is being called.
-    0x00 calldataload 0xE0 shr
-
-    dup1 __FUNC_SIG(doCalls)  eq docalls jumpi
-    dup1 __FUNC_SIG("uniswapV3SwapCallback(int256,int256,bytes)") eq uni3docalls jumpi    
-    dup1 __FUNC_SIG("pancakeV3SwapCallback(int256,int256,bytes)") eq uni3docalls jumpi    
-    dup1 __FUNC_SIG("callFunction(address,(address,uint256),bytes)") eq dydxdocalls jumpi  
-    dup1 __FUNC_SIG("isValidSignature(bytes,bytes)")  eq isvalidsig1 jumpi
-    dup1 __FUNC_SIG("isValidSignature(bytes32,bytes)")  eq isvalidsig2 jumpi
-    dup1 __FUNC_SIG("receiveFlashLoan(address[],uint256[],uint256[],bytes)")  eq balancer2docalls jumpi
-    dup1 __FUNC_SIG("lockAcquired(bytes)") eq uni4docalls jumpi    
-    dup1 __FUNC_SIG("swapCallback(uint256,uint256,bytes)") eq maverickdocalls jumpi    
-
-        pop
-        0x64 calldataload 
-        dup1 0x80 eq uni2_callback_found jumpi
-
-        pop 
-        0x44 calldataload
-        dup1 0x60 eq uni3docalls jumpi
-
-        pop 
-        0x4 calldataload
-        dup1 0x20 eq callback_found jumpi
-
-
-        pop
-        0x24 calldataload
-        dup1 0x40 eq callback_found jumpi
-
-        pop
-        0x84 calldataload 
-        dup1 0xA0 eq callback_found jumpi
-
-        pop 
-        retexit jump
-
-        
-        callback_found:
-        0x4 add
-        execdocalls jump
-
-
-        uni2_callback_found:
-        dup1 calldataload
-        
-        0x14 eq uni2quick jumpi
- 
-        pop
-
-        0x24 calldataload
-        dup1 iszero uni2secondarg jumpi
-        0x20 mstore
-        uni2process jump
-        uni2secondarg:
-        pop
-        0x44 calldataload
-        0x20 mstore
-        uni2process:
-        0x20 0x0 mstore
-
-        0x64 calldataload
-        0x4 add
-
-        execdocalls jump
-
-    balancer2docalls: 
-        pop
-        0x64 calldataload
-        0x4 add
-        DOCALLS()
-        BALANCER_FLASHLOAN()
-        exit jump
-    dydxdocalls: 
-        pop
-        0x84
-        execdocalls jump
-    docalls:
-        pop
-        0x24
-        execdocalls jump
-    uni4docalls:
-        pop
-        0x4 
-        execdocalls jump
-
-    maverickdocalls:
-
-        0x44 calldataload 0x4 add 
-        
-        dup1 calldataload 
-
-        0x14 eq uni3quick jumpi
-        pop
-
-        0x4 calldataload 
-
-        0x40 mstore
-        0x24 calldataload 
-        0x20 mstore
-        uni3process jump
-
-    uni3docalls:
-        pop
-
-        0x44 calldataload 0x4 add 
-        
-        dup1 calldataload 
-
-        0x14 eq uni3quick jumpi
-        pop
-
-
-
-        0x4 calldataload
-        0x0 dup2 slt uni3secondarg jumpi
-        0x40 mstore
-        0x24 calldataload
-        0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff mul
-        0x20 mstore
-        uni3process jump
-
-        uni3secondarg:
-        0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff mul
-        0x20 mstore
-        0x24 calldataload
-        0x40 mstore
-
-
-        uni3process:
-        0x40 0x0 mstore
-        0x44 calldataload
-        0x4 add
-
-    execdocalls:
-        DOCALLS()
-        0x20
-        0x0 mload
-        
-        return
-        exit jump
-
-    isvalidsig1:
-        pop
-        [_ERC1271_MAGICVALUE]
-        0xE0 shl
-        0x0 mstore
-        0x20 0x0 return
-    isvalidsig2:
-        pop
-        [_ERC1271_MAGICVALUE_BYTES32]
-        0xE0 shl
-        0x0 mstore
-        0x20 0x0 return
-
-
-    uni2quick:
-        UNI2_QUICK_RETURN_IN_AMOUNT()
-        0x0 0x0 return
-    uni3quick:
-        UNI3_QUICK_RETURN_IN_AMOUNT()
-        0x0 0x0 return
-    
-    retexit:
-        0x0 0x0 return
-
-    error:
-        returndatasize
-        0x0
-        0x0
-        returndatacopy
-        returndatasize
-        0x0
-        revert
-    exit:
-
-}
-

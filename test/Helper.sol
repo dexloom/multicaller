@@ -4,14 +4,14 @@ import "foundry-huff/HuffDeployer.sol";
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
 
-import "../src/ERC20.sol";
-import "../src/interfaces/dydx/ISoloMargin.sol";
+import "./mocks/ERC20.sol";
+import "./interfaces/dydx/ISoloMargin.sol";
 import "./Interface.sol";
 
-import "../src/mocks/Uni2Pool.sol";
-import "../src/mocks/Uni3Pool.sol";
-import "../src/mocks/Pancake3Pool.sol";
-import "../src/mocks/ShibaswapPool.sol";
+import "./mocks/Uni2Pool.sol";
+import "./mocks/Uni3Pool.sol";
+import "./mocks/Pancake3Pool.sol";
+import "./mocks/ShibaswapPool.sol";
 
 address constant Operator = address(0x16Df4b25e4E37A9116eb224799c1e0Fb17fd8d30);
 address constant WETH = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);

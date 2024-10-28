@@ -4,12 +4,12 @@ import "foundry-huff/HuffDeployer.sol";
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
 
-import "../src/interfaces/dydx/ISoloMargin.sol";
+import "./interfaces/dydx/ISoloMargin.sol";
 import "./Interface.sol";
 import "./Helper.sol";
 
-import "../src/ERC20.sol";
-import "../src/mocks/Uni2Pool.sol";
+import "./mocks/ERC20.sol";
+import "./mocks/Uni2Pool.sol";
 
 contract MulticallerInternalCallsTest is Test, Helper {
     MultiCaller public multicaller;

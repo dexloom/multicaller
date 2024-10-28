@@ -2,7 +2,6 @@
 pragma solidity ^0.8.15;
 
 import "forge-std/console.sol";
-import "forge-std/console.sol";
 
 contract ERC20 {
     function balanceOf(address owner) public view returns (uint) {

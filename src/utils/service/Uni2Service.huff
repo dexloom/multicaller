@@ -5,20 +5,20 @@
     0x60 shr
     0x24 calldataload dup1 iszero amount1 jumpi
     caller
-    UNI2_RESERVES() // [reserve0, reserve1, out_amount]
+    UNI2_RESERVES()      // [reserve0, reserve1, out_amount]
     swap1
     UNI2_GET_AMOUNT_IN() // [in_amount]
     exitqr3 jump
     
     amount1:
-    pop
-    0x44 calldataload
-    caller
-    UNI2_RESERVES() // [reserve0, reserve1, out_amount]
-    UNI2_GET_AMOUNT_IN() // [in_amount]
+        pop
+        0x44 calldataload
+        caller
+        UNI2_RESERVES()      // [reserve0, reserve1, out_amount]
+        UNI2_GET_AMOUNT_IN() // [in_amount]
 
     exitqr3:
-    caller 
-    TRANSFER_ERC20()
+        caller
+        TRANSFER_ERC20()
     
  }

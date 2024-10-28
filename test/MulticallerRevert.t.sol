@@ -7,7 +7,7 @@ import "forge-std/console.sol";
 
 import "./Interface.sol";
 import "./Helper.sol";
-import "../src/ERC20.sol";
+import "./mocks/ERC20.sol";
 
 contract MulticallerRevertTest is Test, Helper, TestHelper {
     function testCallRevert() public {

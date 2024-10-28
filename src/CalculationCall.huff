@@ -1,12 +1,12 @@
 #include "./utils/VMOpcodes.huff"
 
 #define macro DO_CALCULATION_CALL() = takes(2) returns(1) {
-    //[prefix, offset, offset, buflen, .....]
+    // [prefix, offset, offset, buflen, .....]
     0xA0 shr                    
-    [_CALL_LENGTH_MASK] and //[datalen, offset, offset, buflen, .....]
-    0xC add //[datalen+20, offset, offset, buflen, .....]
+    [_CALL_LENGTH_MASK] and  // [datalen, offset, offset, buflen, .....]
+    0xC add                  // [datalen+20, offset, offset, buflen, .....]
     swap1
-    0xC add //[offset +20 , datalen+20, offset, buflen, .....]
+    0xC add                  // [offset +20 , datalen+20, offset, buflen, .....]
 
     DO_CALCULATIONS()
     PUSH_STACK()  

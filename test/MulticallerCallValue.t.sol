@@ -5,8 +5,8 @@ import "foundry-huff/HuffDeployer.sol";
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
 
-import "../src/ERC20.sol";
-import "../src/interfaces/dydx/ISoloMargin.sol";
+import "./mocks/ERC20.sol";
+import "./interfaces/dydx/ISoloMargin.sol";
 import "./Helper.sol";
 import "./Interface.sol";
 

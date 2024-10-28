@@ -1,6 +1,6 @@
 pragma solidity ^0.8.15;
 
-import "../src/interfaces/dydx/ISoloMargin.sol";
+import "./interfaces/dydx/ISoloMargin.sol";
 
 interface MultiCaller {
     function doCalls(bytes calldata data) external payable returns (uint256);
