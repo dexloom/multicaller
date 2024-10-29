@@ -2,6 +2,74 @@
 #include "./utils/internalcalls/Flashbots.huff"
 #include "./utils/internalcalls/Uni2.huff"
 
+/*
+ function transferTipsMinBalanceNoPayout(address token, uint256 min_balance, uint256 tips) external payable;
+  +----------+-------+-------------+------+
+  | a85f1d24 | token | min_balance | tips |
+  +----------+-------+-------------+------+
+       4B       20B       32B         32B
+
+ function transferTipsMinBalance(address token, uint256 min_balance, uint256 tips, address owner) external payable;
+  +----------+-------+-------------+------+--------+
+  | 4df86adf | token | min_balance | tips | owner  |
+  +----------+-------+-------------+------+--------+
+       4B       20B       32B         32B     20B
+
+ function transferTipsMinBalanceWETH(uint256 min_balance, uint256 tips,address owner) external payable;
+  +----------+-------------+------+--------+
+  | 05ec9cad | min_balance | tips | owner  |
+  +----------+-------------+------+--------+
+       4B         32B         32B     20B
+
+ function uni2GetInAmountFrom0(address pool,uint256 amount) external;
+  +----------+-------+--------+
+  | 9b81788b | pool  | amount |
+  +----------+-------+--------+
+       4B       20B     32B
+
+ function uni2GetInAmountFrom1(address pool,uint256 amount) external;
+  +----------+-------+--------+
+  | 8bceaa18 | pool  | amount |
+  +----------+-------+--------+
+       4B       20B     32B
+
+ function uni2GetOutAmountFrom0(address pool,uint256 amount) external;
+  +----------+-------+--------+
+  | 84f16ca0 | pool  | amount |
+  +----------+-------+--------+
+       4B       20B     32B
+
+ function uni2GetOutAmountFrom1(address pool,uint256 amount) external;
+  +----------+-------+--------+
+  | 95b66162 | pool  | amount |
+  +----------+-------+--------+
+       4B       20B     32B
+
+ function uni2GetInAmountFrom0Comms(address pool,uint256 amount, uint256 fee) external;
+  +----------+-------+--------+-----+
+  | 9a23842e2 | pool  | amount | fee |
+  +----------+-------+--------+-----+
+       4B       20B     32B     32B
+
+ function uni2GetInAmountFrom1Comms(address pool,uint256 amount, uint256 fee) external;
+  +----------+-------+--------+-----+
+  | 4fae2f23 | pool  | amount | fee |
+  +----------+-------+--------+-----+
+       4B       20B     32B     32B
+
+ function uni2GetOutAmountFrom0Comms(address pool,uint256 amount, uint256 fee) external;
+  +----------+-------+--------+-----+
+  | a9f2812f | pool  | amount | fee |
+  +----------+-------+--------+-----+
+       4B       20B     32B     32B
+
+ function uni2GetOutAmountFrom1Comms(address pool,uint256 amount, uint256 fee) external;
+  +----------+-------+--------+-----+
+  | f93a1716 | pool  | amount | fee |
+  +----------+-------+--------+-----+
+       4B       20B     32B     32B
+*/
+
 
 #define macro DO_INTERNAL_CALL() = takes(1) returns (1) {
     // [prefix, offset]
@@ -12,7 +80,7 @@
     dup3 
     0xC add
     mload 
-    0xE0 shr //[selector, length, target, prefix, offset]
+    0xE0 shr // [selector, length, target, prefix, offset]
 
     dup1 __FUNC_SIG("transferTipsMinBalanceNoPayout(address,uint256,uint256)") eq transfertipsnopayout   jumpi
     dup1 __FUNC_SIG("transferTipsMinBalance(address,uint256,uint256,address)") eq transfertips           jumpi
