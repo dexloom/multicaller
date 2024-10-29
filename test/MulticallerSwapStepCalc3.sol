@@ -95,12 +95,9 @@ contract MulticallerSwapStep3Test is Test, TestHelper {
             uint256 balanceBefore = weth.balanceOf(address(multicaller));
             (bool result, ) = address(multicaller).call(get_call_data(i));
             uint256 gasUsed = gasLeft - gasleft();
-            uint256 balanceUsed = balanceBefore -
-                weth.balanceOf(address(multicaller));
+            uint256 balanceUsed = balanceBefore - weth.balanceOf(address(multicaller));
             console.log(i, result, get_test_name(i), balanceBefore);
-            if (
-                balanceUsed >= 0.1 ether || gasUsed < 100000 || balanceUsed == 0
-            ) {
+            if (balanceUsed >= 0.1 ether || gasUsed < 100000 || balanceUsed == 0) {
                 console.log(i, "failed");
                 revert("failed");
             }
@@ -113,8 +110,7 @@ contract MulticallerSwapStep3Test is Test, TestHelper {
         uint256 balanceBefore = weth.balanceOf(address(multicaller));
         (bool result, ) = address(multicaller).call(get_call_data(i));
         uint256 gasUsed = gasLeft - gasleft();
-        uint256 balanceUsed = balanceBefore -
-            weth.balanceOf(address(multicaller));
+        uint256 balanceUsed = balanceBefore - weth.balanceOf(address(multicaller));
         console.log(i, result, get_test_name(i), balanceBefore);
     }
 

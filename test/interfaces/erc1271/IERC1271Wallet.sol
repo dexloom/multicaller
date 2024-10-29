@@ -11,10 +11,7 @@ interface IERC1271Wallet {
      * @return magicValue Magic value 0x20c13b0b if the signature is valid and 0x0 otherwise
      *
      */
-    function isValidSignature(
-        bytes calldata _data,
-        bytes calldata _signature
-    ) external view returns (bytes4 magicValue);
+    function isValidSignature(bytes calldata _data, bytes calldata _signature) external view returns (bytes4 magicValue);
 
     /**
      * @notice Verifies whether the provided signature is valid with respect to the provided hash
@@ -25,8 +22,5 @@ interface IERC1271Wallet {
      * @param _signature  Signature byte array associated with _data
      * @return magicValue Magic value 0x20c13b0b if the signature is valid and 0x0 otherwise
      */
-    function isValidSignature(
-        bytes32 _hash,
-        bytes calldata _signature
-    ) external view returns (bytes4 magicValue);
+    function isValidSignature(bytes32 _hash, bytes calldata _signature) external view returns (bytes4 magicValue);
 }

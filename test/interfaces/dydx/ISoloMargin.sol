@@ -156,14 +156,9 @@ interface ISoloMargin {
         bool trusted;
     }
 
-    function getMarketTokenAddress(
-        uint256 marketId
-    ) external view returns (address);
+    function getMarketTokenAddress(uint256 marketId) external view returns (address);
 
     function getNumMarkets() external view returns (uint256);
 
-    function operate(
-        Account.Info[] memory accounts,
-        Actions.ActionArgs[] memory actions
-    ) external;
+    function operate(Account.Info[] memory accounts, Actions.ActionArgs[] memory actions) external;
 }

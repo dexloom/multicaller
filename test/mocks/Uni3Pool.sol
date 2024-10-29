@@ -5,11 +5,7 @@ import "forge-std/console.sol";
 import "forge-std/console.sol";
 
 interface IUniswapV3SwapCallback {
-    function uniswapV3SwapCallback(
-        int256 amount0Delta,
-        int256 amount1Delta,
-        bytes calldata data
-    ) external;
+    function uniswapV3SwapCallback(int256 amount0Delta, int256 amount1Delta, bytes calldata data) external;
 }
 
 contract UniswapV3Pool {
@@ -34,13 +30,7 @@ contract UniswapV3Pool {
     Slot0 public slot0;
     uint128 public liquidity;
 
-    function swap(
-        address recipient,
-        bool zeroForOne,
-        int256 amountSpecified,
-        uint160 sqrtPriceLimitX96,
-        bytes calldata data
-    ) public {
+    function swap(address recipient, bool zeroForOne, int256 amountSpecified, uint160 sqrtPriceLimitX96, bytes calldata data) public {
         int256 amount0;
         int256 amount1;
         if (zeroForOne) {
@@ -50,10 +40,6 @@ contract UniswapV3Pool {
             amount1 = int256(amountSpecified);
             amount0 = -amount1 >> 1;
         }
-        IUniswapV3SwapCallback(msg.sender).uniswapV3SwapCallback(
-            amount0,
-            amount1,
-            data
-        );
+        IUniswapV3SwapCallback(msg.sender).uniswapV3SwapCallback(amount0, amount1, data);
     }
 }

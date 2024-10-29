@@ -133,9 +133,7 @@ contract Helper {
     uint8 public constant OPCODE_PCT_POP = 0x50;
     uint8 public constant OPCODE_PCT = 0x51;
 
-    function removeSignature(
-        bytes memory data
-    ) public pure returns (bytes memory) {
+    function removeSignature(bytes memory data) public pure returns (bytes memory) {
         require(data.length >= 0x44, "Data must include function signature");
         bytes memory result = new bytes(data.length - 0x44);
 
@@ -153,10 +151,7 @@ contract Helper {
         uint256 presetStackParam,
         uint256 storeStackResult
     ) public pure returns (bytes memory) {
-        if (
-            callSelector == CALCULATION_CALL_SELECTOR ||
-            callSelector == INTERNAL_CALL_SELECTOR
-        ) {
+        if (callSelector == CALCULATION_CALL_SELECTOR || callSelector == INTERNAL_CALL_SELECTOR) {
             uint96 callsParams;
             callsParams |= uint96(data.length);
             callsParams |= (uint96(presetStackParam) << 16);
@@ -174,11 +169,7 @@ contract Helper {
         return abi.encodePacked(callParams, data);
     }
 
-    function mergeValueCallData(
-        address callee,
-        bytes memory data,
-        uint256 value
-    ) public pure returns (bytes memory) {
+    function mergeValueCallData(address callee, bytes memory data, uint256 value) public pure returns (bytes memory) {
         uint256 callParams = uint256(uint160(callee));
         callParams |= (data.length << 160);
         callParams |= (value << 176);
@@ -186,50 +177,37 @@ contract Helper {
         return abi.encodePacked(callParams, data);
     }
 
-    function AddOpcode(
-        bytes memory buf,
-        bytes memory opcode
-    ) public pure returns (bytes memory) {
+    function AddOpcode(bytes memory buf, bytes memory opcode) public pure returns (bytes memory) {
         return abi.encodePacked(buf, opcode);
     }
 
-    function AddOpcodes(
-        bytes[1] memory opcodes
-    ) public pure returns (bytes memory script) {
+    function AddOpcodes(bytes[1] memory opcodes) public pure returns (bytes memory script) {
         for (uint i = 0; i < opcodes.length; i++) {
             script = AddOpcode(script, opcodes[i]);
         }
         script = AddOpcode(script, NewOpcodeNoArg(0));
     }
 
-    function AddOpcodes(
-        bytes[2] memory opcodes
-    ) public pure returns (bytes memory script) {
+    function AddOpcodes(bytes[2] memory opcodes) public pure returns (bytes memory script) {
         for (uint i = 0; i < opcodes.length; i++) {
             script = AddOpcode(script, opcodes[i]);
         }
         script = AddOpcode(script, NewOpcodeNoArg(0));
     }
 
-    function AddOpcodes(
-        bytes[3] memory opcodes
-    ) public pure returns (bytes memory script) {
+    function AddOpcodes(bytes[3] memory opcodes) public pure returns (bytes memory script) {
         for (uint i = 0; i < opcodes.length; i++) {
             script = AddOpcode(script, opcodes[i]);
         }
         script = AddOpcode(script, NewOpcodeNoArg(0));
     }
-    function AddOpcodes(
-        bytes[4] memory opcodes
-    ) public pure returns (bytes memory script) {
+    function AddOpcodes(bytes[4] memory opcodes) public pure returns (bytes memory script) {
         for (uint i = 0; i < opcodes.length; i++) {
             script = AddOpcode(script, opcodes[i]);
         }
         script = AddOpcode(script, NewOpcodeNoArg(0));
     }
-    function AddOpcodes(
-        bytes[5] memory opcodes
-    ) public pure returns (bytes memory script) {
+    function AddOpcodes(bytes[5] memory opcodes) public pure returns (bytes memory script) {
         for (uint i = 0; i < opcodes.length; i++) {
             script = AddOpcode(script, opcodes[i]);
         }
@@ -240,39 +218,22 @@ contract Helper {
         return abi.encodePacked(opcode);
     }
 
-    function NewOpcodeUint8(
-        uint8 opcode,
-        uint8 arg
-    ) public pure returns (bytes memory) {
+    function NewOpcodeUint8(uint8 opcode, uint8 arg) public pure returns (bytes memory) {
         return abi.encodePacked(opcode, arg);
     }
 
-    function NewOpcodeAddress(
-        uint8 opcode,
-        address arg
-    ) public pure returns (bytes memory) {
+    function NewOpcodeAddress(uint8 opcode, address arg) public pure returns (bytes memory) {
         return abi.encodePacked(opcode, arg);
     }
 
-    function NewOpcodeUint256(
-        uint8 opcode,
-        uint256 arg
-    ) public pure returns (bytes memory) {
+    function NewOpcodeUint256(uint8 opcode, uint256 arg) public pure returns (bytes memory) {
         return abi.encodePacked(opcode, arg);
     }
-    function NewOpcodeInt256(
-        uint8 opcode,
-        int256 arg
-    ) public pure returns (bytes memory) {
+    function NewOpcodeInt256(uint8 opcode, int256 arg) public pure returns (bytes memory) {
         return abi.encodePacked(opcode, arg);
     }
 
-    function EncodeStack(
-        uint256 rel,
-        uint256 offsetWord,
-        uint256 offsetByte,
-        uint256 lenBytes
-    ) public pure returns (uint256) {
+    function EncodeStack(uint256 rel, uint256 offsetWord, uint256 offsetByte, uint256 lenBytes) public pure returns (uint256) {
         uint256 ret = (rel & 1) << 23;
         ret |= (offsetWord & 7) << 20;
         ret |= (lenBytes & 0xFF) << 12;
@@ -280,12 +241,7 @@ contract Helper {
         return ret;
     }
 
-    function EncodeShortStack(
-        uint256 rel,
-        uint256 offsetWord,
-        uint256 offsetByte,
-        uint256 lenBytes
-    ) public pure returns (uint256) {
+    function EncodeShortStack(uint256 rel, uint256 offsetWord, uint256 offsetByte, uint256 lenBytes) public pure returns (uint256) {
         uint256 ret = (rel & 1) << 23;
         ret |= (offsetWord & 7) << 20;
         ret |= (lenBytes & 0xFF) << 12;
@@ -293,12 +249,7 @@ contract Helper {
         return ret;
     }
 
-    function EncodeReturnStack(
-        uint256 rel,
-        uint256 offsetWord,
-        uint256 offsetByte,
-        uint256 lenBytes
-    ) public pure returns (uint256) {
+    function EncodeReturnStack(uint256 rel, uint256 offsetWord, uint256 offsetByte, uint256 lenBytes) public pure returns (uint256) {
         uint256 ret = (rel & 1) << 23;
         ret |= (offsetWord & 7) << 20;
         ret |= (lenBytes & 0xFF) << 12;

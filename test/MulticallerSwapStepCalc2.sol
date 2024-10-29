@@ -45,12 +45,9 @@ contract MulticallerSwapStep2Test is Test, TestHelper {
             uint256 balanceBefore = weth.balanceOf(address(multicaller));
             (bool result, ) = address(multicaller).call(get_call_data(i));
             uint256 gasUsed = gasLeft - gasleft();
-            uint256 balanceUsed = balanceBefore -
-                weth.balanceOf(address(multicaller));
+            uint256 balanceUsed = balanceBefore - weth.balanceOf(address(multicaller));
             console.log(i, result, get_test_name(i), balanceBefore);
-            if (
-                balanceUsed >= 0.1 ether || balanceUsed == 0 || gasUsed < 100000
-            ) {
+            if (balanceUsed >= 0.1 ether || balanceUsed == 0 || gasUsed < 100000) {
                 console.log(i, "failed");
             }
         }
@@ -62,8 +59,7 @@ contract MulticallerSwapStep2Test is Test, TestHelper {
         uint256 balanceBefore = weth.balanceOf(address(multicaller));
         (bool result, ) = address(multicaller).call(get_call_data(i));
         uint256 gasUsed = gasLeft - gasleft();
-        uint256 balanceUsed = balanceBefore -
-            weth.balanceOf(address(multicaller));
+        uint256 balanceUsed = balanceBefore - weth.balanceOf(address(multicaller));
         console.log(i, result, get_test_name(i), balanceBefore);
     }
 
@@ -83,11 +79,7 @@ contract MulticallerSwapStep2Test is Test, TestHelper {
             uint256 balanceAfter = weth.balanceOf(address(multicaller));
             uint256 balanceUsed = balanceBefore - balanceAfter;
             console.log(i, gasUsed, balanceAfter);
-            if (
-                balanceUsed >= 0.001 ether ||
-                balanceUsed == 0 ||
-                gasUsed < 100000
-            ) {
+            if (balanceUsed >= 0.001 ether || balanceUsed == 0 || gasUsed < 100000) {
                 console.log(i, "failed");
             }
             assertEq(result, true);
@@ -107,16 +99,11 @@ contract MulticallerSwapStep2Test is Test, TestHelper {
             (bool result, ) = address(multicaller).call(call_data[i - 1]);
             uint256 gasUsed = gasLeft - gasleft();
             uint256 balanceAfter = weth.balanceOf(address(multicaller));
-            uint256 balanceUsed = uint256(balanceBefore) -
-                uint256(balanceAfter);
+            uint256 balanceUsed = uint256(balanceBefore) - uint256(balanceAfter);
             console.log(i, gasUsed, balanceUsed);
             console.log(balanceBefore, balanceAfter, balanceUsed);
 
-            if (
-                balanceUsed >= 0.001 ether ||
-                balanceUsed == 0 ||
-                gasUsed < 100000
-            ) {
+            if (balanceUsed >= 0.001 ether || balanceUsed == 0 || gasUsed < 100000) {
                 console.log(i, "failed");
             }
             assertEq(result, true);

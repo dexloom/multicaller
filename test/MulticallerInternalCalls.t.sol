@@ -36,32 +36,12 @@ contract MulticallerInternalCallsTest is Test, Helper {
         address addr = address(0x1122334455667788990011223344556677889900);
         address addr2 = address(0x2233445566778899001122334455667788990011);
 
-        bytes memory callData = abi.encodeWithSignature(
-            "uni2GetInAmountFrom0(address,uint256)",
-            address(uni2Mock),
-            0x11111
-        );
-        bytes memory callDataArray = abi.encodePacked(
-            mergeData(
-                address(erc20Mock),
-                callData,
-                INTERNAL_CALL_SELECTOR,
-                0xFFFFFF,
-                0xFFFFFF
-            )
-        );
+        bytes memory callData = abi.encodeWithSignature("uni2GetInAmountFrom0(address,uint256)", address(uni2Mock), 0x11111);
+        bytes memory callDataArray = abi.encodePacked(mergeData(address(erc20Mock), callData, INTERNAL_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF));
 
-        bytes memory callDoCallsData = abi.encodeWithSignature(
-            "doCalls(bytes)",
-            callDataArray
-        );
+        bytes memory callDoCallsData = abi.encodeWithSignature("doCalls(bytes)", callDataArray);
 
-        multicaller.uniswapV2Call(
-            addr,
-            0x300,
-            0x0,
-            removeSignature(callDoCallsData)
-        );
+        multicaller.uniswapV2Call(addr, 0x300, 0x0, removeSignature(callDoCallsData));
 
         uint256 ret = multicaller.doCalls(callDataArray);
         assertEq(ret, 0x24ae8);
@@ -78,27 +58,11 @@ contract MulticallerInternalCallsTest is Test, Helper {
             0x11111,
             9900
         );
-        bytes memory callDataArray = abi.encodePacked(
-            mergeData(
-                address(erc20Mock),
-                callData,
-                INTERNAL_CALL_SELECTOR,
-                0xFFFFFF,
-                0xFFFFFF
-            )
-        );
+        bytes memory callDataArray = abi.encodePacked(mergeData(address(erc20Mock), callData, INTERNAL_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF));
 
-        bytes memory callDoCallsData = abi.encodeWithSignature(
-            "doCalls(bytes)",
-            callDataArray
-        );
+        bytes memory callDoCallsData = abi.encodeWithSignature("doCalls(bytes)", callDataArray);
 
-        multicaller.uniswapV2Call(
-            addr,
-            0x300,
-            0x0,
-            removeSignature(callDoCallsData)
-        );
+        multicaller.uniswapV2Call(addr, 0x300, 0x0, removeSignature(callDoCallsData));
 
         uint256 ret = multicaller.doCalls(callDataArray);
         assertEq(ret, 151310);
@@ -109,32 +73,12 @@ contract MulticallerInternalCallsTest is Test, Helper {
         address addr = address(0x1122334455667788990011223344556677889900);
         address addr2 = address(0x2233445566778899001122334455667788990011);
 
-        bytes memory callData = abi.encodeWithSignature(
-            "uni2GetInAmountFrom1(address,uint256)",
-            address(uni2Mock),
-            0x11111
-        );
-        bytes memory callDataArray = abi.encodePacked(
-            mergeData(
-                address(erc20Mock),
-                callData,
-                INTERNAL_CALL_SELECTOR,
-                0xFFFFFF,
-                0xFFFFFF
-            )
-        );
+        bytes memory callData = abi.encodeWithSignature("uni2GetInAmountFrom1(address,uint256)", address(uni2Mock), 0x11111);
+        bytes memory callDataArray = abi.encodePacked(mergeData(address(erc20Mock), callData, INTERNAL_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF));
 
-        bytes memory callDoCallsData = abi.encodeWithSignature(
-            "doCalls(bytes)",
-            callDataArray
-        );
+        bytes memory callDoCallsData = abi.encodeWithSignature("doCalls(bytes)", callDataArray);
 
-        multicaller.uniswapV2Call(
-            addr,
-            0x0,
-            0x300,
-            removeSignature(callDoCallsData)
-        );
+        multicaller.uniswapV2Call(addr, 0x0, 0x300, removeSignature(callDoCallsData));
         uint256 ret = multicaller.doCalls(callDataArray);
         assertEq(ret, 0x8dab);
     }
@@ -150,27 +94,11 @@ contract MulticallerInternalCallsTest is Test, Helper {
             0x11111,
             9900
         );
-        bytes memory callDataArray = abi.encodePacked(
-            mergeData(
-                address(erc20Mock),
-                callData,
-                INTERNAL_CALL_SELECTOR,
-                0xFFFFFF,
-                0xFFFFFF
-            )
-        );
+        bytes memory callDataArray = abi.encodePacked(mergeData(address(erc20Mock), callData, INTERNAL_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF));
 
-        bytes memory callDoCallsData = abi.encodeWithSignature(
-            "doCalls(bytes)",
-            callDataArray
-        );
+        bytes memory callDoCallsData = abi.encodeWithSignature("doCalls(bytes)", callDataArray);
 
-        multicaller.uniswapV2Call(
-            addr,
-            0x0,
-            0x300,
-            removeSignature(callDoCallsData)
-        );
+        multicaller.uniswapV2Call(addr, 0x0, 0x300, removeSignature(callDoCallsData));
         uint256 ret = multicaller.doCalls(callDataArray);
         assertEq(ret, 36523);
     }
@@ -180,32 +108,12 @@ contract MulticallerInternalCallsTest is Test, Helper {
         address addr = address(0x1122334455667788990011223344556677889900);
         address addr2 = address(0x2233445566778899001122334455667788990011);
 
-        bytes memory callData = abi.encodeWithSignature(
-            "uni2GetOutAmountFrom0(address,uint256)",
-            address(uni2Mock),
-            0x8dab
-        );
-        bytes memory callDataArray = abi.encodePacked(
-            mergeData(
-                address(erc20Mock),
-                callData,
-                INTERNAL_CALL_SELECTOR,
-                0xFFFFFF,
-                0xFFFFFF
-            )
-        );
+        bytes memory callData = abi.encodeWithSignature("uni2GetOutAmountFrom0(address,uint256)", address(uni2Mock), 0x8dab);
+        bytes memory callDataArray = abi.encodePacked(mergeData(address(erc20Mock), callData, INTERNAL_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF));
 
-        bytes memory callDoCallsData = abi.encodeWithSignature(
-            "doCalls(bytes)",
-            callDataArray
-        );
+        bytes memory callDoCallsData = abi.encodeWithSignature("doCalls(bytes)", callDataArray);
 
-        multicaller.uniswapV2Call(
-            addr,
-            0x300,
-            0x0,
-            removeSignature(callDoCallsData)
-        );
+        multicaller.uniswapV2Call(addr, 0x300, 0x0, removeSignature(callDoCallsData));
 
         uint256 ret = multicaller.doCalls(callDataArray);
         assertEq(ret, 0x11111);
@@ -222,27 +130,11 @@ contract MulticallerInternalCallsTest is Test, Helper {
             0x8dab,
             9900
         );
-        bytes memory callDataArray = abi.encodePacked(
-            mergeData(
-                address(erc20Mock),
-                callData,
-                INTERNAL_CALL_SELECTOR,
-                0xFFFFFF,
-                0xFFFFFF
-            )
-        );
+        bytes memory callDataArray = abi.encodePacked(mergeData(address(erc20Mock), callData, INTERNAL_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF));
 
-        bytes memory callDoCallsData = abi.encodeWithSignature(
-            "doCalls(bytes)",
-            callDataArray
-        );
+        bytes memory callDoCallsData = abi.encodeWithSignature("doCalls(bytes)", callDataArray);
 
-        multicaller.uniswapV2Call(
-            addr,
-            0x300,
-            0x0,
-            removeSignature(callDoCallsData)
-        );
+        multicaller.uniswapV2Call(addr, 0x300, 0x0, removeSignature(callDoCallsData));
 
         uint256 ret = multicaller.doCalls(callDataArray);
         assertEq(ret, 69431);
@@ -253,31 +145,11 @@ contract MulticallerInternalCallsTest is Test, Helper {
         address addr = address(0x1122334455667788990011223344556677889900);
         address addr2 = address(0x2233445566778899001122334455667788990011);
 
-        bytes memory callData = abi.encodeWithSignature(
-            "uni2GetOutAmountFrom1(address,uint256)",
-            address(uni2Mock),
-            0x24ae8
-        );
-        bytes memory callDataArray = abi.encodePacked(
-            mergeData(
-                address(erc20Mock),
-                callData,
-                INTERNAL_CALL_SELECTOR,
-                0xFFFFFF,
-                0xFFFFFF
-            )
-        );
+        bytes memory callData = abi.encodeWithSignature("uni2GetOutAmountFrom1(address,uint256)", address(uni2Mock), 0x24ae8);
+        bytes memory callDataArray = abi.encodePacked(mergeData(address(erc20Mock), callData, INTERNAL_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF));
 
-        bytes memory callDoCallsData = abi.encodeWithSignature(
-            "doCalls(bytes)",
-            callDataArray
-        );
-        multicaller.uniswapV2Call(
-            addr,
-            0x0,
-            0x300,
-            removeSignature(callDoCallsData)
-        );
+        bytes memory callDoCallsData = abi.encodeWithSignature("doCalls(bytes)", callDataArray);
+        multicaller.uniswapV2Call(addr, 0x0, 0x300, removeSignature(callDoCallsData));
 
         //bytes memory callDoCallsData = abi.encodeWithSignature("doCalls(bytes)",callDataArray);
         uint256 ret = multicaller.doCalls(callDataArray);
@@ -295,26 +167,10 @@ contract MulticallerInternalCallsTest is Test, Helper {
             0x24ae8,
             9900
         );
-        bytes memory callDataArray = abi.encodePacked(
-            mergeData(
-                address(erc20Mock),
-                callData,
-                INTERNAL_CALL_SELECTOR,
-                0xFFFFFF,
-                0xFFFFFF
-            )
-        );
+        bytes memory callDataArray = abi.encodePacked(mergeData(address(erc20Mock), callData, INTERNAL_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF));
 
-        bytes memory callDoCallsData = abi.encodeWithSignature(
-            "doCalls(bytes)",
-            callDataArray
-        );
-        multicaller.uniswapV2Call(
-            addr,
-            0x0,
-            0x300,
-            removeSignature(callDoCallsData)
-        );
+        bytes memory callDoCallsData = abi.encodeWithSignature("doCalls(bytes)", callDataArray);
+        multicaller.uniswapV2Call(addr, 0x0, 0x300, removeSignature(callDoCallsData));
 
         //bytes memory callDoCallsData = abi.encodeWithSignature("doCalls(bytes)",callDataArray);
         uint256 ret = multicaller.doCalls(callDataArray);
@@ -326,62 +182,19 @@ contract MulticallerInternalCallsTest is Test, Helper {
         address addr = address(0x1122334455667788990011223344556677889900);
         address addr2 = address(0x2233445566778899001122334455667788990011);
 
-        bytes memory callData = abi.encodeWithSignature(
-            "uni2GetOutAmountFrom1(address,uint256)",
-            address(uni2Mock),
-            0x24ae8
-        );
-        bytes memory callData2 = abi.encodeWithSignature(
-            "balanceOf(address)",
-            address(multicaller)
-        );
-        bytes memory callData3 = abi.encodeWithSignature(
-            "transfer(address,uint256)",
-            address(multicaller),
-            0
-        );
+        bytes memory callData = abi.encodeWithSignature("uni2GetOutAmountFrom1(address,uint256)", address(uni2Mock), 0x24ae8);
+        bytes memory callData2 = abi.encodeWithSignature("balanceOf(address)", address(multicaller));
+        bytes memory callData3 = abi.encodeWithSignature("transfer(address,uint256)", address(multicaller), 0);
 
         bytes memory callDataArray = abi.encodePacked(
-            mergeData(
-                address(0),
-                callData,
-                INTERNAL_CALL_SELECTOR,
-                0xFFFFFF,
-                0xFFFFFF
-            ),
-            mergeData(
-                address(0),
-                callData,
-                INTERNAL_CALL_SELECTOR,
-                EncodeShortStack(0, 0, 0x24, 0x20),
-                0xFFFFFF
-            ),
-            mergeData(
-                address(erc20Mock),
-                callData2,
-                STATIC_CALL_SELECTOR,
-                0xFFFFFF,
-                0xFFFFFF
-            ),
-            mergeData(
-                address(erc20Mock),
-                callData3,
-                STATIC_CALL_SELECTOR,
-                EncodeStack(0, 1, 0x24, 0x20),
-                0xFFFFFF
-            )
+            mergeData(address(0), callData, INTERNAL_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF),
+            mergeData(address(0), callData, INTERNAL_CALL_SELECTOR, EncodeShortStack(0, 0, 0x24, 0x20), 0xFFFFFF),
+            mergeData(address(erc20Mock), callData2, STATIC_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF),
+            mergeData(address(erc20Mock), callData3, STATIC_CALL_SELECTOR, EncodeStack(0, 1, 0x24, 0x20), 0xFFFFFF)
         );
 
-        bytes memory callDoCallsData = abi.encodeWithSignature(
-            "doCalls(bytes)",
-            callDataArray
-        );
-        multicaller.uniswapV2Call(
-            addr,
-            0x0,
-            0x300,
-            removeSignature(callDoCallsData)
-        );
+        bytes memory callDoCallsData = abi.encodeWithSignature("doCalls(bytes)", callDataArray);
+        multicaller.uniswapV2Call(addr, 0x0, 0x300, removeSignature(callDoCallsData));
 
         //bytes memory callDoCallsData = abi.encodeWithSignature("doCalls(bytes)",callDataArray);
         uint256 ret = multicaller.doCalls(callDataArray);

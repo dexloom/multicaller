@@ -17,13 +17,7 @@ interface IUniswapV3PoolDerivedState {
     /// timestamp
     function observe(
         uint32[] calldata secondsAgos
-    )
-        external
-        view
-        returns (
-            int56[] memory tickCumulatives,
-            uint160[] memory secondsPerLiquidityCumulativeX128s
-        );
+    ) external view returns (int56[] memory tickCumulatives, uint160[] memory secondsPerLiquidityCumulativeX128s);
 
     /// @notice Returns a snapshot of the tick cumulative, seconds per liquidity and seconds inside a tick range
     /// @dev Snapshots must only be compared to other snapshots, taken over a period for which a position existed.
@@ -37,12 +31,5 @@ interface IUniswapV3PoolDerivedState {
     function snapshotCumulativesInside(
         int24 tickLower,
         int24 tickUpper
-    )
-        external
-        view
-        returns (
-            int56 tickCumulativeInside,
-            uint160 secondsPerLiquidityInsideX128,
-            uint32 secondsInside
-        );
+    ) external view returns (int56 tickCumulativeInside, uint160 secondsPerLiquidityInsideX128, uint32 secondsInside);
 }

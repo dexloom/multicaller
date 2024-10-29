@@ -477,11 +477,7 @@ contract MulticallerSwapStepCurveTest is Test, TestHelper {
             uint256 balanceAfter = weth.balanceOf(address(multicaller));
             console.log(i, result, get_test_name(i), balanceAfter);
             vm.revertTo(snapshot);
-            if (
-                balanceBefore == balanceAfter ||
-                balanceAfter > balanceBefore ||
-                balanceBefore - balanceAfter > 0.001 ether
-            ) {
+            if (balanceBefore == balanceAfter || balanceAfter > balanceBefore || balanceBefore - balanceAfter > 0.001 ether) {
                 console.log(i, "failed");
             }
             assertEq(result, true);

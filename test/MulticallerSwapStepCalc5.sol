@@ -24,8 +24,7 @@ contract MulticallerSwapStep5Test is Test, TestHelper {
             (bool result, ) = address(multicaller).call(call_data[i - 1]);
             uint256 gasUsed = gasLeft - gasleft();
             uint256 balanceAfter = weth.balanceOf(address(multicaller));
-            uint256 balanceUsed = uint256(balanceBefore) -
-                uint256(balanceAfter);
+            uint256 balanceUsed = uint256(balanceBefore) - uint256(balanceAfter);
             console.log(i, gasUsed, balanceBefore - balanceAfter);
             console.log(balanceBefore, balanceAfter);
 

@@ -31,28 +31,11 @@ contract MulticallerCallValueTest is Test, Helper {
         address addr = address(0x1122334455667788990011223344556677889900);
         address addr2 = address(0x2233445566778899001122334455667788990011);
 
-        bytes memory callData = abi.encodeWithSignature(
-            "balanceOf(address)",
-            addr
-        );
-        bytes memory callData2 = abi.encodeWithSignature(
-            "transfer(address,uint256)",
-            addr2,
-            100
-        );
-        bytes memory callData3 = abi.encodeWithSignature(
-            "transfer(address,uint256)",
-            addr,
-            200
-        );
+        bytes memory callData = abi.encodeWithSignature("balanceOf(address)", addr);
+        bytes memory callData2 = abi.encodeWithSignature("transfer(address,uint256)", addr2, 100);
+        bytes memory callData3 = abi.encodeWithSignature("transfer(address,uint256)", addr, 200);
         bytes memory callDataArray = abi.encodePacked(
-            mergeData(
-                address(erc20Mock2),
-                callData2,
-                ZERO_VALUE_CALL_SELECTOR,
-                0xFFFFFF,
-                0xFFFFFF
-            )
+            mergeData(address(erc20Mock2), callData2, ZERO_VALUE_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF)
         );
 
         multicaller.doCalls(callDataArray);
@@ -64,23 +47,10 @@ contract MulticallerCallValueTest is Test, Helper {
         address addr = address(0x1122334455667788990011223344556677889900);
         address addr2 = address(0x2233445566778899001122334455667788990011);
 
-        bytes memory callData = abi.encodeWithSignature(
-            "balanceOf(address)",
-            addr
-        );
-        bytes memory callData2 = abi.encodeWithSignature(
-            "transfer(address,uint256)",
-            addr2,
-            100
-        );
-        bytes memory callData3 = abi.encodeWithSignature(
-            "transfer(address,uint256)",
-            addr,
-            200
-        );
-        bytes memory callDataArray = abi.encodePacked(
-            mergeValueCallData(address(erc20Mock2), callData2, 0x100)
-        );
+        bytes memory callData = abi.encodeWithSignature("balanceOf(address)", addr);
+        bytes memory callData2 = abi.encodeWithSignature("transfer(address,uint256)", addr2, 100);
+        bytes memory callData3 = abi.encodeWithSignature("transfer(address,uint256)", addr, 200);
+        bytes memory callDataArray = abi.encodePacked(mergeValueCallData(address(erc20Mock2), callData2, 0x100));
 
         multicaller.doCalls(callDataArray);
         //assertEq(counter.number(), 22);
@@ -91,28 +61,11 @@ contract MulticallerCallValueTest is Test, Helper {
         address addr = address(0x1122334455667788990011223344556677889900);
         address addr2 = address(0x2233445566778899001122334455667788990011);
 
-        bytes memory callData = abi.encodeWithSignature(
-            "balanceOf(address)",
-            addr
-        );
-        bytes memory callData2 = abi.encodeWithSignature(
-            "transfer(address,uint256)",
-            addr2,
-            100
-        );
-        bytes memory callData3 = abi.encodeWithSignature(
-            "transfer(address,uint256)",
-            addr,
-            200
-        );
+        bytes memory callData = abi.encodeWithSignature("balanceOf(address)", addr);
+        bytes memory callData2 = abi.encodeWithSignature("transfer(address,uint256)", addr2, 100);
+        bytes memory callData3 = abi.encodeWithSignature("transfer(address,uint256)", addr, 200);
         bytes memory callDataArray = abi.encodePacked(
-            mergeData(
-                address(erc20Mock2),
-                callData2,
-                ZERO_VALUE_CALL_SELECTOR,
-                0xFFFFFF,
-                0xFFFFFF
-            ),
+            mergeData(address(erc20Mock2), callData2, ZERO_VALUE_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF),
             mergeValueCallData(address(erc20Mock2), callData2, 0x100)
         );
 
@@ -125,29 +78,12 @@ contract MulticallerCallValueTest is Test, Helper {
         address addr = address(0x1122334455667788990011223344556677889900);
         address addr2 = address(0x2233445566778899001122334455667788990011);
 
-        bytes memory callData = abi.encodeWithSignature(
-            "balanceOf(address)",
-            addr
-        );
-        bytes memory callData2 = abi.encodeWithSignature(
-            "transfer(address,uint256)",
-            addr2,
-            100
-        );
-        bytes memory callData3 = abi.encodeWithSignature(
-            "transfer(address,uint256)",
-            addr,
-            200
-        );
+        bytes memory callData = abi.encodeWithSignature("balanceOf(address)", addr);
+        bytes memory callData2 = abi.encodeWithSignature("transfer(address,uint256)", addr2, 100);
+        bytes memory callData3 = abi.encodeWithSignature("transfer(address,uint256)", addr, 200);
         bytes memory callDataArray = abi.encodePacked(
             mergeValueCallData(address(erc20Mock2), callData2, 0x100),
-            mergeData(
-                address(erc20Mock2),
-                callData2,
-                ZERO_VALUE_CALL_SELECTOR,
-                0xFFFFFF,
-                0xFFFFFF
-            )
+            mergeData(address(erc20Mock2), callData2, ZERO_VALUE_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF)
         );
 
         multicaller.doCalls(callDataArray);
@@ -157,38 +93,13 @@ contract MulticallerCallValueTest is Test, Helper {
     function testCall5() public {
         address addr = address(erc20Mock);
 
-        bytes memory callData = abi.encodeWithSignature(
-            "balanceOf(address)",
-            addr
-        );
-        bytes memory callData2 = abi.encodeWithSignature(
-            "transfer(address,uint256)",
-            addr,
-            0x0
-        );
+        bytes memory callData = abi.encodeWithSignature("balanceOf(address)", addr);
+        bytes memory callData2 = abi.encodeWithSignature("transfer(address,uint256)", addr, 0x0);
 
         bytes memory callDataMerged = abi.encodePacked(
-            mergeData(
-                address(erc20Mock),
-                callData,
-                STATIC_CALL_SELECTOR,
-                0xFFFFFF,
-                EncodeReturnStack(1, 0, 0, 0x20)
-            ),
-            mergeData(
-                address(erc20Mock),
-                callData2,
-                VALUE_CALL_SELECTOR,
-                EncodeStack(1, 0, 0x24, 0x20),
-                0xFFFFFF
-            ),
-            mergeData(
-                address(erc20Mock),
-                callData2,
-                ZERO_VALUE_CALL_SELECTOR,
-                EncodeStack(1, 0, 0x24, 0x20),
-                0xFFFFFF
-            )
+            mergeData(address(erc20Mock), callData, STATIC_CALL_SELECTOR, 0xFFFFFF, EncodeReturnStack(1, 0, 0, 0x20)),
+            mergeData(address(erc20Mock), callData2, VALUE_CALL_SELECTOR, EncodeStack(1, 0, 0x24, 0x20), 0xFFFFFF),
+            mergeData(address(erc20Mock), callData2, ZERO_VALUE_CALL_SELECTOR, EncodeStack(1, 0, 0x24, 0x20), 0xFFFFFF)
         );
 
         uint ret = multicaller.doCalls(callDataMerged);
@@ -198,38 +109,13 @@ contract MulticallerCallValueTest is Test, Helper {
     function testCall6() public {
         address addr = address(erc20Mock);
 
-        bytes memory callData = abi.encodeWithSignature(
-            "balanceOf(address)",
-            addr
-        );
-        bytes memory callData2 = abi.encodeWithSignature(
-            "transfer(address,uint256)",
-            addr,
-            0x1111
-        );
+        bytes memory callData = abi.encodeWithSignature("balanceOf(address)", addr);
+        bytes memory callData2 = abi.encodeWithSignature("transfer(address,uint256)", addr, 0x1111);
 
         bytes memory callDataMerged = abi.encodePacked(
-            mergeData(
-                address(erc20Mock),
-                callData,
-                STATIC_CALL_SELECTOR,
-                0xFFFFFF,
-                EncodeReturnStack(1, 0, 0, 0x20)
-            ),
-            mergeData(
-                address(erc20Mock),
-                callData2,
-                VALUE_CALL_SELECTOR,
-                EncodeStack(1, 0, 0x24, 0x0),
-                0xFFFFFF
-            ),
-            mergeData(
-                address(erc20Mock),
-                callData2,
-                ZERO_VALUE_CALL_SELECTOR,
-                EncodeStack(1, 0, 0x24, 0x0),
-                0xFFFFFF
-            )
+            mergeData(address(erc20Mock), callData, STATIC_CALL_SELECTOR, 0xFFFFFF, EncodeReturnStack(1, 0, 0, 0x20)),
+            mergeData(address(erc20Mock), callData2, VALUE_CALL_SELECTOR, EncodeStack(1, 0, 0x24, 0x0), 0xFFFFFF),
+            mergeData(address(erc20Mock), callData2, ZERO_VALUE_CALL_SELECTOR, EncodeStack(1, 0, 0x24, 0x0), 0xFFFFFF)
         );
 
         uint ret = multicaller.doCalls(callDataMerged);
