@@ -130,6 +130,7 @@
     dup1 __FUNC_SIG("lockAcquired(bytes)")                                   eq uni4docalls      jumpi
     dup1 __FUNC_SIG("swapCallback(uint256,uint256,bytes)")                   eq maverickdocalls  jumpi
 
+
     pop
     0x64 calldataload // load with offset 100 bytes, data argument from uniswapV2Call
     dup1 0x80 eq uni2_callback_found jumpi
@@ -397,7 +398,7 @@
 
 
 #define macro DOCALLS() = takes(1) returns(0) {
-    //[offset]
+    // [offset]
     dup1 calldataload   // [len, offset]
     dup1 swap2          // swap2
  

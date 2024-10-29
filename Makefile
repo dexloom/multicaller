@@ -1,5 +1,3 @@
-
-
 .PHONY: test
 test:
 	forge test --fork-url http://localhost:8545 --sender 0x16Df4b25e4E37A9116eb224799c1e0Fb17fd8d30
@@ -19,3 +17,9 @@ lint:
 .PHONY: lint-check
 lint-check:
 	npm run lint-check
+
+.PHONY: anvil
+anvil:
+	anvil --fork-url "${MAINNET_HTTP}" \
+        --mnemonic "harvest apology gasp defy rebel gun tool observe seed lottery erase remember" \
+        --fork-block-number 19101578

@@ -3,24 +3,28 @@ pragma solidity ^0.8.15;
 import "foundry-huff/HuffDeployer.sol";
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
+import {IERC20} from "forge-std/interfaces/IERC20.sol";
 
-import "./mocks/ERC20.sol";
-import "./interfaces/dydx/ISoloMargin.sol";
-import "./Interface.sol";
+import {ERC20} from "./mocks/ERC20.sol";
+import {IWETH} from "./interfaces/weth/IWETH.sol";
+import {IUSDT} from "./interfaces/IUSDT.sol";
+import {MultiCaller} from "./Interface.sol";
 
-import "./mocks/Uni2Pool.sol";
-import "./mocks/Uni3Pool.sol";
-import "./mocks/Pancake3Pool.sol";
-import "./mocks/ShibaswapPool.sol";
+import {UniswapV2Pair} from "./mocks/Uni2Pool.sol";
+import {UniswapV3Pool} from "./mocks/Uni3Pool.sol";
+import {PancakeV3Pool} from "./mocks/Pancake3Pool.sol";
+import {ShibaswapV2Pair} from "./mocks/ShibaswapPool.sol";
 
-address constant Operator = address(0x16Df4b25e4E37A9116eb224799c1e0Fb17fd8d30);
+address constant OPERATOR = address(0x16Df4b25e4E37A9116eb224799c1e0Fb17fd8d30);
+address constant MULTICALLER = address(0x7878787878787878787878787878787878787878);
+
 address constant WETH = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
 address constant USDT = address(0xdAC17F958D2ee523a2206206994597C13D831ec7);
 
 contract TestHelper is Test {
     MultiCaller public multicaller;
-    ERC20 public weth;
-    ERC20 public usdt;
+    IWETH public weth;
+    IUSDT public usdt;
     ERC20 public erc20Mock;
     ERC20 public erc20Mock2;
     UniswapV2Pair public uni2Mock;
@@ -30,14 +34,9 @@ contract TestHelper is Test {
 
     function setUp() public {
         multicaller = MultiCaller(HuffDeployer.deploy("Multicaller"));
-        bytes memory code = address(multicaller).code;
-        address targetAddr = address(
-            0x7878787878787878787878787878787878787878
-        );
-        vm.etch(targetAddr, code);
-        multicaller = MultiCaller(
-            address(0x7878787878787878787878787878787878787878)
-        );
+        vm.etch(MULTICALLER, address(multicaller).code);
+
+        multicaller = MultiCaller(MULTICALLER);
 
         console.log("Multicaller:", address(multicaller));
         vm.deal(address(multicaller), 0.5 ether);
@@ -50,25 +49,27 @@ contract TestHelper is Test {
         erc20Mock = new ERC20();
         erc20Mock2 = new ERC20();
 
-        donate_weth(address(multicaller));
-        donate_usdt(address(multicaller));
+        weth = IWETH(WETH);
+        usdt = IUSDT(USDT);
 
-        weth = ERC20(WETH);
-        usdt = ERC20(USDT);
+        donateWETH(address(multicaller));
+        donateUSDT(address(multicaller));
 
-        vm.startPrank(Operator, Operator);
+        console.log("Multicaller balance:", address(multicaller).balance);
+        vm.startPrank(OPERATOR, OPERATOR);
     }
 
-    function donate_weth(address to) public {
-        ERC20 weth = ERC20(WETH);
-        vm.prank(0x8EB8a3b98659Cce290402893d0123abb75E3ab28);
+    function donateWETH(address to) public {
+        vm.deal(OPERATOR, 2 ether);
+        vm.prank(OPERATOR);
+        weth.deposit{value: 1 ether}();
+        vm.prank(OPERATOR);
         weth.transfer(to, 1.0 ether);
     }
 
-    function donate_usdt(address to) public {
-        ERC20 usdt = ERC20(USDT);
-        vm.prank(0xF977814e90dA44bFA03b6295A0616a897441aceC);
-        usdt.transfer(to, 1_000_000_000); // 1k
+    function donateUSDT(address to) public {
+        vm.startPrank(0xF977814e90dA44bFA03b6295A0616a897441aceC); // Binance wallet for funding
+        usdt.transfer(address(multicaller), 1_000_000_000); // 1k
     }
 }
 

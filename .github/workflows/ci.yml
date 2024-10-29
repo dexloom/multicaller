@@ -25,7 +25,7 @@ jobs:
           version: nightly
 
       - run: forge install
-      - run: anvil --fork-url $MAINNET_HTTP &
+      - run: make anvil &
       - run: make test
 
   fmt-check:
