@@ -5,7 +5,7 @@ import "../src/interfaces/dydx/ISoloMargin.sol";
 
 
 interface MultiCaller {
-    event LogStack(uint256 indexed,uint256 indexed);
+    event Stack(uint256 indexed, uint256 indexed);
 
     function doCalls(bytes calldata data) external payable returns(uint256);
     function uniswapV2Call(address sender, uint amount0, uint amount1, bytes calldata data) external;

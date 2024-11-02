@@ -256,8 +256,9 @@ bytes(hex"2847241700000000000000000000000000000000000000000000000000000000000000
 
    function test_combo1() public {
 
+        uint256 snapshot = vm.snapshot();
+
         for( uint256 i = 0 ; i < callsdata.length; i++) {
-            uint256 snapshot = vm.snapshot();
             uint256 gasLeft = gasleft();
             uint256 balanceBefore = weth.balanceOf(address(multicaller));
             (bool result, ) = address(multicaller).call( get_call_data(i) );

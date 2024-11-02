@@ -11,7 +11,7 @@ import "./Interface.sol";
 import "./Helper.sol";
 
 
-contract MulticallerSwapStepMergeTest is Test, TestHelper {
+contract MulticallerSwapStepMergeTest is Test, TestHelper, SwapTest {
 
  
     string[48] testname = [
@@ -119,40 +119,36 @@ bytes(hex"2847241700000000000000000000000000000000000000000000000000000000000000
     /// @dev Setup the testing environment.
 
 
-  
-   
-    function get_call_data(uint256 i ) internal returns (bytes memory) {
+    function get_call_data( uint256 i ) override internal returns (bytes memory) {
         return callsdata[i];
     }
 
-    function get_test_name(uint256 i ) internal returns (string memory) {
+    function get_test_name( uint256 i ) override internal returns (string memory) {
         return testname[i];
     }
 
-
-   function test_combo1() public {
-
-        for( uint256 i = 0 ; i < callsdata.length; i++) {
-            uint256 snapshot = vm.snapshot();
-            uint256 gasLeft = gasleft();
-            uint256 balanceBefore = weth.balanceOf(address(multicaller));
-            (bool result, ) = address(multicaller).call( get_call_data(i) );
-            uint256 gasUsed = gasLeft - gasleft();
-            uint256 balanceAfter = weth.balanceOf(address(multicaller));
-            uint256 balanceUsed = balanceBefore - balanceAfter;
-            console.log(i, result, get_test_name(i), balanceAfter);
-            vm.revertTo(snapshot);
-            if( balanceUsed >= 0.1 ether || balanceUsed == 0 || gasUsed > 100000 ) {
-                console.log(i,"failed");
-                revert("failed");
-            }
-
-            assertEq(result, true);
-
-        }
-
+    function get_count( ) override internal returns (uint256) {
+        return callsdata.length;
+    }
+   
+    function get_swap_token() override internal returns (address) {
+        return address(weth);
     }
 
+    function get_multicaller() override internal returns (address) {
+        return address(TestHelper.multicaller);
+    }
+    
+
+    function test_combo() public {
+        test_all();
+    }
+
+    function test_single() public {
+        test_one(0);
+    }
+
+    /*
    function test_single() public {
             uint256 i = 11;
             uint256 gasLeft = gasleft();
@@ -184,6 +180,7 @@ bytes(hex"2847241700000000000000000000000000000000000000000000000000000000000000
         }
 
     }
+    */
 
 
 

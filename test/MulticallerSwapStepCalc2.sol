@@ -11,7 +11,7 @@ import "./Interface.sol";
 import "./Helper.sol";
 
 
-contract MulticallerSwapStep2Test is Test, TestHelper {
+contract MulticallerSwapStep2Test is Test, TestHelper, SwapTest {
  
     string[4] testname = [
 "1 UniswapV3Like UniswapV3Like",
@@ -29,43 +29,35 @@ bytes(hex"2847241700000000000000000000000000000000000000000000000000000000000000
 ];
 
   
-    function get_call_data(uint256 i ) internal returns (bytes memory) {
+    function get_call_data( uint256 i ) override internal returns (bytes memory) {
         return callsdata[i];
     }
 
-    function get_test_name(uint256 i ) internal returns (string memory) {
+    function get_test_name( uint256 i ) override internal returns (string memory) {
         return testname[i];
     }
 
+    function get_count( ) override internal returns (uint256) {
+        return callsdata.length;
+    }
+   
+    function get_swap_token() override internal returns (address) {
+        return address(weth);
+    }
 
-   function test_combo1() public {
+    function get_multicaller() override internal returns (address) {
+        return address(TestHelper.multicaller);
+    }
 
-        for( uint256 i = 0 ; i < callsdata.length; i++) {
-            uint256 gasLeft = gasleft();
-            uint256 balanceBefore = weth.balanceOf(address(multicaller));
-            (bool result, ) = address(multicaller).call( get_call_data(i) );
-            uint256 gasUsed = gasLeft - gasleft();
-            uint256 balanceUsed = balanceBefore - weth.balanceOf(address(multicaller));
-            console.log(i, result, get_test_name(i), balanceBefore);
-            if( balanceUsed >= 0.1 ether || balanceUsed == 0 || gasUsed < 100000) {
-                console.log(i,"failed");
-            }
-
-        }
-
+   function test_combo() public {
+        test_all();
     }
 
    function test_single() public {
-            uint256 i = 0;
-            uint256 gasLeft = gasleft();
-            uint256 balanceBefore = weth.balanceOf(address(multicaller));
-            (bool result, ) = address(multicaller).call( get_call_data(i) );
-            uint256 gasUsed = gasLeft - gasleft();
-            uint256 balanceUsed = balanceBefore - weth.balanceOf(address(multicaller));
-            console.log(i, result, get_test_name(i), balanceBefore);
-
+        test_one(0);
     }
 
+    /*
    function test_combo2() public {
         bytes[1] memory call_data = [
             //maverick
@@ -110,6 +102,7 @@ bytes(hex"2847241700000000000000000000000000000000000000000000000000000000000000
         }
 
     }
+    */
 
 
 
