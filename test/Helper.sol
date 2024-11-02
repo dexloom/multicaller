@@ -3,19 +3,21 @@ pragma solidity ^0.8.15;
 import "foundry-huff/HuffDeployer.sol";
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
+import {IERC20} from "forge-std/interfaces/IERC20.sol";
 
-import "../src/ERC20.sol";
-import "../src/interfaces/dydx/ISoloMargin.sol";
-import "./Interface.sol";
+import {ERC20} from "./mocks/ERC20.sol";
+import {IWETH} from "./interfaces/weth/IWETH.sol";
+import {IUSDT} from "./interfaces/IUSDT.sol";
+import {MultiCaller} from "./Interface.sol";
 
-import "../src/mocks/Uni2Pool.sol";
-import "../src/mocks/Uni3Pool.sol";
-import "../src/mocks/Pancake3Pool.sol";
-import "../src/mocks/ShibaswapPool.sol";
+import {UniswapV2Pair} from "./mocks/Uni2Pool.sol";
+import {UniswapV3Pool} from "./mocks/Uni3Pool.sol";
+import {PancakeV3Pool} from "./mocks/Pancake3Pool.sol";
+import {ShibaswapV2Pair} from "./mocks/ShibaswapPool.sol";
 
+address constant OPERATOR = address(0x16Df4b25e4E37A9116eb224799c1e0Fb17fd8d30);
+address constant MULTICALLER = address(0x7878787878787878787878787878787878787878);
 
-
-address constant Operator = address(0x16Df4b25e4E37A9116eb224799c1e0Fb17fd8d30);
 address constant WETH = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
 address constant USDT = address(0xdAC17F958D2ee523a2206206994597C13D831ec7);
 
@@ -60,8 +62,8 @@ abstract contract SwapTest is Test{
 
 contract TestHelper is Test {
     MultiCaller public multicaller;
-    ERC20 public weth;
-    ERC20 public usdt;
+    IWETH public weth;
+    IUSDT public usdt;
     ERC20 public erc20Mock;
     ERC20 public erc20Mock2;
     UniswapV2Pair public uni2Mock;
@@ -69,13 +71,11 @@ contract TestHelper is Test {
     PancakeV3Pool public pancake3Mock;
     ShibaswapV2Pair public shibaMock;
 
- 
     function setUp() public {
         multicaller = MultiCaller(HuffDeployer.deploy("Multicaller"));
-        bytes memory code = address(multicaller).code;
-        address targetAddr = address(0x7878787878787878787878787878787878787878);
-        vm.etch(targetAddr, code);
-        multicaller = MultiCaller(address(0x7878787878787878787878787878787878787878));
+        vm.etch(MULTICALLER, address(multicaller).code);
+
+        multicaller = MultiCaller(MULTICALLER);
 
         console.log("Multicaller:", address(multicaller));
         vm.deal(address(multicaller), 0.5 ether);
@@ -88,26 +88,27 @@ contract TestHelper is Test {
         erc20Mock = new ERC20();
         erc20Mock2 = new ERC20();
 
+        weth = IWETH(WETH);
+        usdt = IUSDT(USDT);
 
-        donate_weth(address(multicaller));
-        donate_usdt(address(multicaller));
+        donateWETH(address(multicaller));
+        donateUSDT(address(multicaller));
 
-        weth = ERC20(WETH);
-        usdt = ERC20(USDT);
-
-        vm.startPrank(Operator,Operator);
+        console.log("Multicaller balance:", address(multicaller).balance);
+        vm.startPrank(OPERATOR, OPERATOR);
     }
 
-    function donate_weth(address to) public {
-        //ERC20 weth = ERC20(WETH);
-        vm.prank(0x8EB8a3b98659Cce290402893d0123abb75E3ab28);
+    function donateWETH(address to) public {
+        vm.deal(OPERATOR, 2 ether);
+        vm.prank(OPERATOR);
+        weth.deposit{value: 1 ether}();
+        vm.prank(OPERATOR);
         weth.transfer(to, 1.0 ether);
     }
 
-    function donate_usdt(address to) public  {
-        //ERC20 usdt = ERC20(USDT);
-        vm.prank(0xF977814e90dA44bFA03b6295A0616a897441aceC);
-        usdt.transfer(to, 1_000_000_000); // 1k
+    function donateUSDT(address to) public {
+        vm.startPrank(0xF977814e90dA44bFA03b6295A0616a897441aceC); // Binance wallet for funding
+        usdt.transfer(address(multicaller), 1_000_000_000); // 1k
     }
 
     
@@ -115,13 +116,12 @@ contract TestHelper is Test {
 }
 
 contract Helper {
-    uint256 public constant VALUE_CALL_SELECTOR =  0x7ffa;
-    uint256 public constant CALCULATION_CALL_SELECTOR =  0x7ffb;
-    uint256 public constant ZERO_VALUE_CALL_SELECTOR =  0x7ffc;
-    uint256 public constant INTERNAL_CALL_SELECTOR =  0x7ffd;
-    uint256 public constant STATIC_CALL_SELECTOR   =  0x7ffe;
-    uint256 public constant DELEGATE_CALL_SELECTOR =  0x7fff;
-
+    uint256 public constant VALUE_CALL_SELECTOR = 0x7ffa;
+    uint256 public constant CALCULATION_CALL_SELECTOR = 0x7ffb;
+    uint256 public constant ZERO_VALUE_CALL_SELECTOR = 0x7ffc;
+    uint256 public constant INTERNAL_CALL_SELECTOR = 0x7ffd;
+    uint256 public constant STATIC_CALL_SELECTOR = 0x7ffe;
+    uint256 public constant DELEGATE_CALL_SELECTOR = 0x7fff;
 
     uint8 public constant OPCODE_LOAD_STACK_1 = 0x1;
     uint8 public constant OPCODE_LOAD_STACK_2 = 0x2;
@@ -152,7 +152,6 @@ contract Helper {
 
     uint8 public constant OPCODE_NEG = 0x2A;
 
-
     uint8 public constant OPCODE_EQ_REVERT = 0x40;
     uint8 public constant OPCODE_NEQ_REVERT = 0x41;
     uint8 public constant OPCODE_LT_REVERT = 0x42;
@@ -176,9 +175,6 @@ contract Helper {
     uint8 public constant OPCODE_PCT_POP = 0x50;
     uint8 public constant OPCODE_PCT = 0x51;
 
-
-
-
     function removeSignature(bytes memory data) public pure returns (bytes memory) {
         require(data.length >= 0x44, "Data must include function signature");
         bytes memory result = new bytes(data.length - 0x44);
@@ -188,11 +184,16 @@ contract Helper {
         }
 
         return result;
-    }   
+    }
 
-
-    function mergeData(address callee, bytes memory data, uint256 callSelector, uint256 presetStackParam, uint256 storeStackResult) public pure returns (bytes memory) {
-        if( callSelector == CALCULATION_CALL_SELECTOR || callSelector == INTERNAL_CALL_SELECTOR ) {
+    function mergeData(
+        address callee,
+        bytes memory data,
+        uint256 callSelector,
+        uint256 presetStackParam,
+        uint256 storeStackResult
+    ) public pure returns (bytes memory) {
+        if (callSelector == CALCULATION_CALL_SELECTOR || callSelector == INTERNAL_CALL_SELECTOR) {
             uint96 callsParams;
             callsParams |= uint96(data.length);
             callsParams |= (uint96(presetStackParam) << 16);
@@ -200,7 +201,6 @@ contract Helper {
 
             callsParams |= (uint96(callSelector) << 80);
             return abi.encodePacked(callsParams, data);
-
         }
         uint256 callParams = uint256(uint160(callee));
         callParams |= (data.length << 160);
@@ -224,42 +224,37 @@ contract Helper {
     }
 
     function AddOpcodes(bytes[1] memory opcodes) public pure returns (bytes memory script) {
-        
-        for(uint i = 0 ; i < opcodes.length; i ++) {
+        for (uint i = 0; i < opcodes.length; i++) {
             script = AddOpcode(script, opcodes[i]);
         }
         script = AddOpcode(script, NewOpcodeNoArg(0));
     }
 
     function AddOpcodes(bytes[2] memory opcodes) public pure returns (bytes memory script) {
-        
-        for(uint i = 0 ; i < opcodes.length; i ++) {
+        for (uint i = 0; i < opcodes.length; i++) {
             script = AddOpcode(script, opcodes[i]);
         }
         script = AddOpcode(script, NewOpcodeNoArg(0));
     }
 
     function AddOpcodes(bytes[3] memory opcodes) public pure returns (bytes memory script) {
-        
-        for(uint i = 0 ; i < opcodes.length; i ++) {
+        for (uint i = 0; i < opcodes.length; i++) {
             script = AddOpcode(script, opcodes[i]);
         }
         script = AddOpcode(script, NewOpcodeNoArg(0));
     }
     function AddOpcodes(bytes[4] memory opcodes) public pure returns (bytes memory script) {
-        for(uint i = 0 ; i < opcodes.length; i ++) {
+        for (uint i = 0; i < opcodes.length; i++) {
             script = AddOpcode(script, opcodes[i]);
         }
         script = AddOpcode(script, NewOpcodeNoArg(0));
     }
-    function AddOpcodes( bytes[5] memory opcodes) public pure returns (bytes memory script) {
-        for(uint i = 0 ; i < opcodes.length; i ++) {
+    function AddOpcodes(bytes[5] memory opcodes) public pure returns (bytes memory script) {
+        for (uint i = 0; i < opcodes.length; i++) {
             script = AddOpcode(script, opcodes[i]);
         }
         script = AddOpcode(script, NewOpcodeNoArg(0));
-    
     }
-
 
     function NewOpcodeNoArg(uint8 opcode) public pure returns (bytes memory) {
         return abi.encodePacked(opcode);
@@ -280,33 +275,27 @@ contract Helper {
         return abi.encodePacked(opcode, arg);
     }
 
-    function EncodeStack(uint256 rel, uint256 offsetWord, uint256 offsetByte, uint256 lenBytes) public pure returns(uint256) {
+    function EncodeStack(uint256 rel, uint256 offsetWord, uint256 offsetByte, uint256 lenBytes) public pure returns (uint256) {
         uint256 ret = (rel & 1) << 23;
         ret |= (offsetWord & 7) << 20;
         ret |= (lenBytes & 0xFF) << 12;
-        ret |= (offsetByte + 0x20 & 0xFFF);
+        ret |= ((offsetByte + 0x20) & 0xFFF);
         return ret;
-
     }
 
-    function EncodeShortStack(uint256 rel, uint256 offsetWord, uint256 offsetByte, uint256 lenBytes) public pure returns(uint256) {
+    function EncodeShortStack(uint256 rel, uint256 offsetWord, uint256 offsetByte, uint256 lenBytes) public pure returns (uint256) {
         uint256 ret = (rel & 1) << 23;
         ret |= (offsetWord & 7) << 20;
         ret |= (lenBytes & 0xFF) << 12;
-        ret |= (offsetByte + 0xC & 0xFFF);
+        ret |= ((offsetByte + 0xC) & 0xFFF);
         return ret;
-
     }
 
-    function EncodeReturnStack(uint256 rel, uint256 offsetWord, uint256 offsetByte, uint256 lenBytes) public pure returns(uint256) {
+    function EncodeReturnStack(uint256 rel, uint256 offsetWord, uint256 offsetByte, uint256 lenBytes) public pure returns (uint256) {
         uint256 ret = (rel & 1) << 23;
         ret |= (offsetWord & 7) << 20;
         ret |= (lenBytes & 0xFF) << 12;
         ret |= (offsetByte & 0xFFF);
         return ret;
-
     }
-
-
-
 }

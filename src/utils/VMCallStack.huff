@@ -1,8 +1,5 @@
 #include "Memory.huff"
 
-
-
-
 // ABBCCC
 // A 01234567
 // 0 - rel mask
@@ -11,7 +8,7 @@
 // CC memory data offset
 
 #define macro SETUP_STACK() = takes(2) returns(0) {
-    //[mask, data_offset]
+    // [mask, data_offset]
     dup1 iszero exit_ss_no_need jumpi
     dup1 0xFFFFFF eq exit_ss_no_need jumpi
     swap1
@@ -30,7 +27,7 @@
     norel:
 
 
-     // [src_offset_bytes, dst_offset_bytes, bytes_len]
+    // [src_offset_bytes, dst_offset_bytes, bytes_len]
     swap1 // [dst_offset_bytes, src_offset_bytes, bytes_len]
 
     MEM_COPY() 
@@ -63,7 +60,7 @@
 
 
 #define macro PUSH_CALL_RETURN() = takes(1) returns(0) {
-          //[mask]
+    // [mask]
     dup1 iszero exit_cr jumpi
     dup1 0xFFFFFF eq exit_cr jumpi
     //dup1 0x0 mstore 0x20 0x0 revert
@@ -92,7 +89,7 @@
   
     norel_cr:
     0x20 add
-     // [src_offset_bytes, dst_offset_bytes, bytes_len]
+    // [src_offset_bytes, dst_offset_bytes, bytes_len]
     //calldatacopy
 
     returndatacopy
@@ -100,4 +97,3 @@
     exit_cr:
     pop
 }
-

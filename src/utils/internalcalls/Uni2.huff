@@ -2,19 +2,19 @@
 
 #define macro UNI2_RESERVES() = takes(1) returns(2) {
     // Static Call token.balanceOf(address(this))
-    0x100 mload //[mem_offset, pool]
-    __FUNC_SIG("getReserves()") dup2 mstore       // [mem_offset]
-    0x60                                    // [retSize, mem_offset]
-    dup2                                    // [retOffset, retSize, mem_offset]
-    0x4                                     // [argSize, retOffset, retSize, mem_offset]
-    dup4 0x1c add                           // [argOffset, argSize, retOffset, retSize, mem_offset]
-    dup6                                    // [to, argOffset, argSize, retOffset, retSize, mem_offset]
-    gas                                     // [gas, to, argOffset, argSize, retOffset, retSize, mem_offset]
-    staticcall                              // [success, mem_offset, pool]
+    0x100 mload // [mem_offset, pool]
+    __FUNC_SIG("getReserves()") dup2 mstore  // [mem_offset]
+    0x60                                     // [retSize, mem_offset]
+    dup2                                     // [retOffset, retSize, mem_offset]
+    0x4                                      // [argSize, retOffset, retSize, mem_offset]
+    dup4 0x1c add                            // [argOffset, argSize, retOffset, retSize, mem_offset]
+    dup6                                     // [to, argOffset, argSize, retOffset, retSize, mem_offset]
+    gas                                      // [gas, to, argOffset, argSize, retOffset, retSize, mem_offset]
+    staticcall                               // [success, mem_offset, pool]
     // Validate successful call
-    iszero skip_r0 jumpi                    // [mem_offset, pool]
+    iszero skip_r0 jumpi                     // [mem_offset, pool]
     swap1 pop
-    dup1 0x20 add mload                                   // [reserve1, mem_offset]
+    dup1 0x20 add mload                      // [reserve1, mem_offset]
     swap1 mload // [reserve0, reserve1]
     exit_r0 jump
     skip_r0:
@@ -22,137 +22,140 @@
     0x0
     0x0
     exit_r0:
- } 
+}
 
 
 #define macro UNI2_PARSE_AMOUNT_CALL() = takes(1) returns(2) {
   // [offset]
   dup1 0x24 add mload  // [amount, offset]
-  swap1 0x4 add mload  //[address, amount]
+  swap1 0x4 add mload  // [address, amount]
 }
+
 
 #define macro UNI2_PARSE_AMOUNT_CALL_COMMS() = takes(1) returns(3) {
   // [offset]
-  dup1 0x24 add mload // [amount,offset]
-  dup2 0x44 add mload // [comms, amount, offset]
-  swap2 0x4 add mload  //[address, amount, comms]
+  dup1 0x24 add mload  // [amount,offset]
+  dup2 0x44 add mload  // [comms, amount, offset]
+  swap2 0x4 add mload  // [address, amount, comms]
 }
 
 
 #define macro UNI2_GET_AMOUNT_IN() = takes(4) returns(1) {
-    //[reserveIn, reserveOut, amountOut, comms]
+    // [reserveIn, reserveOut, amountOut, comms]
     dup3 mul
-    0x2710 mul //[numerator, reserveOut, amountOut, comms]
-    swap2 //[amountOut, reserveOut, numerator, comms]
-    swap1 sub // [reserveOut - amountOut, numerator, comms] 
+    0x2710 mul  // [numerator, reserveOut, amountOut, comms]
+    swap2       // [amountOut, reserveOut, numerator, comms]
+    swap1 sub   // [reserveOut - amountOut, numerator, comms]
     swap1
-    swap2 // [comms, reserveOut - amountOut, numerator]
-    mul // [denominator, numerator]
+    swap2       // [comms, reserveOut - amountOut, numerator]
+    mul         // [denominator, numerator]
     swap1 div
     0x1 add
 }
 
-#define macro UNI2_GET_AMOUNT_OUT() = takes(4) returns(1) {
-    //[reserveIn, reserveOut, amountIn, comms]
-    swap1
-    swap2 // [amountIn, reserveOut, reserveIn, comms]
-    swap1  // [reserveOut, amountIn, reserveIn, comms]
-    swap3 // [comms, amountIn, reserveIn, reserveOut]
 
-    mul //[amountInWithFee, reserveIn, reserveOut ]
-    swap2 dup3 //[amountInWithFee, reserveOut, reserveIn, amountInWithFee ]
-    mul //[numerator, reserveIn, amountInWithFee ]
-    swap2 swap1 // [reserveIn, amountInWithFee, numerator]
-    0x2710 mul add // [denominator, numerator]
+#define macro UNI2_GET_AMOUNT_OUT() = takes(4) returns(1) {
+    // [reserveIn, reserveOut, amountIn, comms]
+    swap1
+    swap2           // [amountIn, reserveOut, reserveIn, comms]
+    swap1           // [reserveOut, amountIn, reserveIn, comms]
+    swap3           // [comms, amountIn, reserveIn, reserveOut]
+
+    mul             // [amountInWithFee, reserveIn, reserveOut ]
+    swap2 dup3      // [amountInWithFee, reserveOut, reserveIn, amountInWithFee ]
+    mul             // [numerator, reserveIn, amountInWithFee ]
+    swap2 swap1     // [reserveIn, amountInWithFee, numerator]
+    0x2710 mul add  // [denominator, numerator]
     swap1
     div
-    //dup1 0x0 mstore 0x20 0x0 revert
-    
+    // dup1 0x0 mstore 0x20 0x0 revert
 }
 
 
- #define macro UNI2_GET_IN_AMOUNT_FROM_0() = takes(1) returns(1) {
+#define macro UNI2_GET_IN_AMOUNT_FROM_0() = takes(1) returns(1) {
     // [call_data_offset]
     0x26F2 swap1 
     UNI2_PARSE_AMOUNT_CALL()
-    //[ pool, out_amount ]
+    // [pool, out_amount]
     UNI2_RESERVES() // [reserve0, reserve1, out_amount]
-    //dup2 0x0 mstore 0x20 0x0 revert
+    // dup2 0x0 mstore 0x20 0x0 revert
     swap1
     UNI2_GET_AMOUNT_IN() // [in_amount]
     PUSH_STACK()
-  }
+}
 
-  #define macro UNI2_GET_IN_AMOUNT_FROM_1() = takes(1) returns(1) {
+#define macro UNI2_GET_IN_AMOUNT_FROM_1() = takes(1) returns(1) {
     // [call_data_offset]
     0x26F2 swap1 
     UNI2_PARSE_AMOUNT_CALL()
-    //[ pool, out_amount]
+    // [pool, out_amount]
     UNI2_RESERVES() // [reserve0, reserve1, out_amount]
-    //dup2 0x0 mstore 0x20 0x0 revert
+    // dup2 0x0 mstore 0x20 0x0 revert
     UNI2_GET_AMOUNT_IN() // [in_amount]
     PUSH_STACK()
  }
 
-  #define macro UNI2_GET_OUT_AMOUNT_FROM_0() = takes(1) returns(1) {
+#define macro UNI2_GET_OUT_AMOUNT_FROM_0() = takes(1) returns(1) {
     // [call_data_offset]
     0x26F2 swap1 
-    UNI2_PARSE_AMOUNT_CALL() //[ pool, out_amount ]
+    UNI2_PARSE_AMOUNT_CALL() // [pool, out_amount]
 
     UNI2_RESERVES() // [reserve0, reserve1, out_amount]
     //dup2 0x0 mstore 0x20 0x0 revert
     swap1
     UNI2_GET_AMOUNT_OUT() // [in_amount]
     PUSH_STACK()
-  }
+}
 
-  #define macro UNI2_GET_OUT_AMOUNT_FROM_1() = takes(1) returns(1) {
+#define macro UNI2_GET_OUT_AMOUNT_FROM_1() = takes(1) returns(1) {
     // [call_data_offset]
     0x26F2 swap1 
     UNI2_PARSE_AMOUNT_CALL()
-    //[ pool, out_amount, comms]
-    UNI2_RESERVES() // [reserve0, reserve1, out_amount]
+    // [pool, out_amount, comms]
+    UNI2_RESERVES()       // [reserve0, reserve1, out_amount]
     UNI2_GET_AMOUNT_OUT() // [in_amount]
     PUSH_STACK()
  }
 
 
- #define macro UNI2_GET_IN_AMOUNT_FROM_0_COMMS() = takes(1) returns(1) {
+#define macro UNI2_GET_IN_AMOUNT_FROM_0_COMMS() = takes(1) returns(1) {
     // [call_data_offset]
     UNI2_PARSE_AMOUNT_CALL_COMMS()
-    //[ pool, out_amount, comms ]
-    UNI2_RESERVES() // [reserve0, reserve1, out_amount]
+    // [pool, out_amount, comms]
+    UNI2_RESERVES()       // [reserve0, reserve1, out_amount]
     swap1
-    UNI2_GET_AMOUNT_IN() // [in_amount]
+    UNI2_GET_AMOUNT_IN()  // [in_amount]
     PUSH_STACK()
-  }
+}
 
-  #define macro UNI2_GET_IN_AMOUNT_FROM_1_COMMS() = takes(1) returns(1) {
+#define macro UNI2_GET_IN_AMOUNT_FROM_1_COMMS() = takes(1) returns(1) {
     // [call_data_offset]
     UNI2_PARSE_AMOUNT_CALL_COMMS()
-    //[ pool, out_amount]
-    UNI2_RESERVES() // [reserve0, reserve1, out_amount]
+    // [pool, out_amount]
+    UNI2_RESERVES()      // [reserve0, reserve1, out_amount]
     //dup2 0x0 mstore 0x20 0x0 revert
     UNI2_GET_AMOUNT_IN() // [in_amount]
     PUSH_STACK()
- }
+}
 
-  #define macro UNI2_GET_OUT_AMOUNT_FROM_0_COMMS() = takes(1) returns(1) {
+
+#define macro UNI2_GET_OUT_AMOUNT_FROM_0_COMMS() = takes(1) returns(1) {
     // [call_data_offset]
     UNI2_PARSE_AMOUNT_CALL_COMMS()
-    //[ pool, out_amount ]
+    //[pool, out_amount]
     //dup1 0x0 mstore 0x20 0x0 revert
-    UNI2_RESERVES() // [reserve0, reserve1, out_amount]
+    UNI2_RESERVES()       // [reserve0, reserve1, out_amount]
     swap1
     UNI2_GET_AMOUNT_OUT() // [in_amount]
     PUSH_STACK()
   }
 
-  #define macro UNI2_GET_OUT_AMOUNT_FROM_1_COMMS() = takes(1) returns(1) {
+
+#define macro UNI2_GET_OUT_AMOUNT_FROM_1_COMMS() = takes(1) returns(1) {
     // [call_data_offset]
     UNI2_PARSE_AMOUNT_CALL_COMMS()
-    //[ pool, out_amount]
-    UNI2_RESERVES() // [reserve0, reserve1, out_amount]
-    UNI2_GET_AMOUNT_OUT() // [in_amount]
+    // [pool, out_amount]
+    UNI2_RESERVES()        // [reserve0, reserve1, out_amount]
+    UNI2_GET_AMOUNT_OUT()  // [in_amount]
     PUSH_STACK()
  }

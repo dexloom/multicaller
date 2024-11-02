@@ -1,5 +1,5 @@
 [profile.default]
-solc_version = '0.8.20'
+solc_version = '0.8.28'
 evm_version = 'shanghai'
 auto_detect_solc = false
 optimizer = true
@@ -10,4 +10,3 @@ remappings = [
   "forge-std=lib/forge-std/src/",
   "foundry-huff=lib/foundry-huff/src/",
 ]
-

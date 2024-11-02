@@ -1,32 +1,32 @@
 #define macro DO_CALL() = takes(3) returns (1) {
-    //[prefix, offset, value]
-     dup1                              // [prefix, prefix, offset, value]
-    [_ADDRESS_MASK] and  // [target, prefix, offset, value]
+    // [prefix, offset, value]
+    dup1                     // [prefix, prefix, offset, value]
+    [_ADDRESS_MASK] and      // [target, prefix, offset, value]
     
-    dup2                // [prefix, target, prefix, offset, value]
+    dup2                     // [prefix, target, prefix, offset, value]
 
     dup1
-    0xA0 shr             // [prefix >> 0xA0, prefix, target, prefix, offset, value]        
-    [_CALL_LENGTH_MASK] and //[length, prefix, target, prefix, offset, value]
+    0xA0 shr                 // [prefix >> 0xA0, prefix, target, prefix, offset, value]
+    [_CALL_LENGTH_MASK] and  // [length, prefix, target, prefix, offset, value]
   
-    0x00        //[0, length, prefix, target,  offset , value]            
-    0x00        //[0, 0, length, prefix, target,  offset, value]               
-    dup3        //[length, 0, 0, length, prefix, target,  offset, value]   
-    0x20        //[0x20, length, 0, 0, length, prefix, target,  offset, value]
-    dup9        //[offset, 0x20, length, 0, 0, length, prefix, target,  offset, value]
-    add         //[offset + 0x20, length, 0, 0, length, prefix, target,  offset, value]
+    0x00                     // [0, length, prefix, target,  offset , value]
+    0x00                     // [0, 0, length, prefix, target,  offset, value]
+    dup3                     // [length, 0, 0, length, prefix, target,  offset, value]
+    0x20                     // [0x20, length, 0, 0, length, prefix, target,  offset, value]
+    dup9                     // [offset, 0x20, length, 0, 0, length, prefix, target,  offset, value]
+    add                      // [offset + 0x20, length, 0, 0, length, prefix, target,  offset, value]
 
-    dup10        //[value, offset + 0x20, length, 0, 0, length, prefix, target, prefix, offset, value]
-    dup8        //[target, value, offset + 0x20, length, 0, 0, length, prefix, target, prefix, offset, value]
-    gas         //[gas, target, value, offset + 0x20, length, 0, 0, length, prefix, target, prefix, offset, value]
-    call  //[success, length, prefix, target, prefix, offset, value]]
-    iszero error jumpi // [length, prefix, target, prefix, offset, value]
+    dup10                    // [value, offset + 0x20, length, 0, 0, length, prefix, target, prefix, offset, value]
+    dup8                     // [target, value, offset + 0x20, length, 0, 0, length, prefix, target, prefix, offset, value]
+    gas                      // [gas, target, value, offset + 0x20, length, 0, 0, length, prefix, target, prefix, offset, value]
+    call                     // [success, length, prefix, target, prefix, offset, value]]
+    iszero error jumpi       // [length, prefix, target, prefix, offset, value]
 
-    swap5 //[value, prefix, target, prefix, offset, length ]
-    swap2 //[target, prefix, value, prefix, offset, length ]
+    swap5                    // [value, prefix, target, prefix, offset, length ]
+    swap2                    // [target, prefix, value, prefix, offset, length ]
 
-    pop //[prefix, value, prefix, offset, length]
-    pop //[value, prefix, offset, length]
+    pop                      // [prefix, value, prefix, offset, length]
+    pop                      // [value, prefix, offset, length]
 
     iszero iszero exit_call jumpi
  
@@ -40,5 +40,4 @@
     pop
     pop
     0x20 add
-
 }

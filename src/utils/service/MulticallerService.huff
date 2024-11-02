@@ -29,8 +29,6 @@
 }
 
 
-
-
 /// @notice Receive profits from contract
 #define macro RECOVER_ERC20() = takes (0) returns (0) {
     0x04 calldataload                       // [token]
@@ -55,8 +53,6 @@
     // Validate call success
     iszero error jumpi stop
 }
-
-
 
 
 // @notice Withdraws eth from this contract to the caller
@@ -104,6 +100,7 @@
     //iszero error jumpi stop
 }
 
+
 /// @notice Receive profits from contract
 #define macro WITHDRAW_WETH() = takes (1) returns (0) {
     0x100 mload
@@ -128,6 +125,3 @@
     // Validate call success
     //iszero error jumpi stop
 }
-
-
-
