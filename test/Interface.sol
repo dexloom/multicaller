@@ -3,6 +3,8 @@ pragma solidity ^0.8.15;
 import "./interfaces/dydx/ISoloMargin.sol";
 
 interface MultiCaller {
+    event Stack(uint256 indexed, uint256 indexed);
+
     function doCalls(bytes calldata data) external payable returns (uint256);
     function uniswapV2Call(address sender, uint amount0, uint amount1, bytes calldata data) external;
     function isValidSignature(bytes32, bytes calldata) external view returns (bytes4);
@@ -22,4 +24,6 @@ interface MultiCaller {
     function uni2GetInAmountFrom1Comms(address pool, uint256 amount, uint256 fee) external;
     function uni2GetOutAmountFrom0Comms(address pool, uint256 amount, uint256 fee) external;
     function uni2GetOutAmountFrom1Comms(address pool, uint256 amount, uint256 fee) external;
+    function logStack() external;
+    function logStackOffset(uint256) external;
 }

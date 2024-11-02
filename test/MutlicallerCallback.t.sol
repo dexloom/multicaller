@@ -10,6 +10,8 @@ import "./Helper.sol";
 import "./Interface.sol";
 
 import "./mocks/ERC20.sol";
+import "./mocks/Pancake3Pool.sol";
+import "./mocks/ShibaswapPool.sol";
 import "./mocks/Uni2Pool.sol";
 import "./mocks/Uni3Pool.sol";
 
@@ -46,8 +48,7 @@ contract MulticallerCallbackTest is Test, Helper, TestHelper {
         //assertEq(amount1, 0x300);
     }
 
-    function testCallErcInsideUni2QuickTransfer() public {
-        return; // disable test
+    function testCallErcInsideUni2QuickTransfer1() public {
         console.log("testCallErcInsideUni2CallbackArray");
         address addr = address(0x1122334455667788990011223344556677889900);
         address addr2 = address(0x2233445566778899001122334455667788990011);
@@ -68,7 +69,6 @@ contract MulticallerCallbackTest is Test, Helper, TestHelper {
     }
 
     function testCallErcInsideUni2QuickTransfer2() public {
-        return; // disable test
         console.log("testCallErcInsideUni2CallbackArray");
         address addr = address(0x1122334455667788990011223344556677889900);
         address addr2 = address(0x2233445566778899001122334455667788990011);

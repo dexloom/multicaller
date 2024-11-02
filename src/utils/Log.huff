@@ -1,0 +1,30 @@
+#define event Stack(uint256 indexed, uint256 indexed)
+
+#define macro LOG_PARSE_IDX() = takes(1) returns(2) {
+  // [offset]
+  dup1 0x24 add mload  // [amount, offset]
+  swap1 0x4 add mload  //[address, amount]
+}
+
+#define macro LOG_STACK() = takes (0) returns (0) {
+    0x0 mload
+    dup1
+    0x0 add
+    mload 
+    __EVENT_HASH(Stack) // [sig, address, uint]
+    0x00 0x00                // [mem_start, mem_end, sig, address, uint]
+    log3                     // []
+}
+
+#define macro LOG_STACK_OFFSET() = takes (1) returns (0) {
+    0x5 shl // [word]
+    0x0 mload // [stack offset, word offset]
+    dup1
+    swap2
+    swap1
+    sub
+    mload 
+    __EVENT_HASH(Stack) // [sig, address, uint]
+    0x00 0x00                // [mem_start, mem_end, sig, address, uint]
+    log3                     // []
+}

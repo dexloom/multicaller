@@ -4,12 +4,11 @@ import "foundry-huff/HuffDeployer.sol";
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
 
-import "./interfaces/dydx/ISoloMargin.sol";
 import "./Interface.sol";
 import "./Helper.sol";
 
-import "./mocks/ERC20.sol";
-import "./mocks/Uni2Pool.sol";
+import {ERC20} from "./mocks/ERC20.sol";
+import {UniswapV2Pair} from "./mocks/Uni2Pool.sol";
 
 contract MulticallerInternalCallsTest is Test, Helper {
     MultiCaller public multicaller;
@@ -199,5 +198,71 @@ contract MulticallerInternalCallsTest is Test, Helper {
         //bytes memory callDoCallsData = abi.encodeWithSignature("doCalls(bytes)",callDataArray);
         uint256 ret = multicaller.doCalls(callDataArray);
         assertEq(ret, 33726);
+    }
+
+    event Stack(uint256 indexed, uint256 indexed);
+    function testCallLogStack() public {
+        console.log("testCallErcInsideUni2CallbackArray");
+        address addr = address(0x1122334455667788990011223344556677889900);
+        address addr2 = address(0x2233445566778899001122334455667788990011);
+
+        bytes memory callData = abi.encodeWithSignature(
+            "uni2GetOutAmountFrom1Comms(address,uint256,uint256)",
+            address(uni2Mock),
+            0x24ae8,
+            9900
+        );
+        bytes memory logStackData = abi.encodeWithSignature("logStack()");
+
+        bytes memory callDataArray = abi.encodePacked(
+            mergeData(address(erc20Mock), callData, INTERNAL_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF),
+            mergeData(address(erc20Mock), logStackData, INTERNAL_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF)
+        );
+
+        bytes memory callDoCallsData = abi.encodeWithSignature("doCalls(bytes)", callDataArray);
+        //multicaller.uniswapV2Call(addr, 0x0, 0x300, removeSignature(callDoCallsData));
+
+        vm.expectEmit(true, true, false, false);
+        // The event we expect
+        emit Stack(0x10f47, 0x20);
+
+        uint256 ret = multicaller.doCalls(callDataArray);
+    }
+
+    function testCallLogStackOffset() public {
+        console.log("testCallErcInsideUni2CallbackArray");
+        address addr = address(0x1122334455667788990011223344556677889900);
+        address addr2 = address(0x2233445566778899001122334455667788990011);
+
+        bytes memory callData = abi.encodeWithSignature(
+            "uni2GetOutAmountFrom1Comms(address,uint256,uint256)",
+            address(uni2Mock),
+            0x24ae8,
+            9900
+        );
+        bytes memory callData2 = abi.encodeWithSignature(
+            "uni2GetOutAmountFrom0Comms(address,uint256,uint256)",
+            address(uni2Mock),
+            0x24ae8,
+            9900
+        );
+        bytes memory logStackOffsetData = abi.encodeWithSignature("logStackOffset(uint256)", 0);
+        bytes memory logStackOffsetData2 = abi.encodeWithSignature("logStackOffset(uint256)", 1);
+
+        bytes memory callDataArray = abi.encodePacked(
+            mergeData(address(erc20Mock), callData, INTERNAL_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF),
+            mergeData(address(erc20Mock), callData2, INTERNAL_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF),
+            mergeData(address(erc20Mock), logStackOffsetData, INTERNAL_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF),
+            mergeData(address(erc20Mock), logStackOffsetData2, INTERNAL_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF)
+        );
+
+        bytes memory callDoCallsData = abi.encodeWithSignature("doCalls(bytes)", callDataArray);
+        //multicaller.uniswapV2Call(addr, 0x0, 0x300, removeSignature(callDoCallsData));
+
+        //vm.expectEmit(true, true, false, false);
+        // The event we expect
+        //emit Stack(0x10f47, 0x20 );
+
+        uint256 ret = multicaller.doCalls(callDataArray);
     }
 }
