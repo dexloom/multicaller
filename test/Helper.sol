@@ -21,6 +21,45 @@ address constant MULTICALLER = address(0x787878787878787878787878787878787878787
 address constant WETH = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
 address constant USDT = address(0xdAC17F958D2ee523a2206206994597C13D831ec7);
 
+abstract contract SwapTest is Test{
+    function get_call_data(uint256 i ) virtual internal returns (bytes memory);
+
+    function get_test_name(uint256 i ) virtual internal returns (string memory);
+
+    function get_count() virtual internal returns (uint256);
+
+    function get_swap_token() virtual internal returns (address);
+
+    function get_multicaller() virtual internal returns (address);
+
+
+    function test_all( ) public {
+
+        uint256 snapshot = vm.snapshot();
+
+        for( uint256 i = 0 ; i < get_count(); i++) {
+            test_one(i);
+            vm.revertTo(snapshot);
+        }
+
+    }
+
+    function test_one(uint256 index) public {
+        uint256 gasLeft = gasleft();
+        uint256 balanceBefore = ERC20(get_swap_token()).balanceOf(get_multicaller());
+        (bool result, ) = get_multicaller().call( get_call_data(index) );
+        uint256 gasUsed = gasLeft - gasleft();
+        uint256 balanceAfter = ERC20(get_swap_token()).balanceOf(get_multicaller());
+        console.log(index, result, get_test_name(index), balanceAfter);
+        if(  balanceBefore == balanceAfter || balanceAfter > balanceBefore || balanceBefore - balanceAfter > 0.001 ether) {
+            console.log(index,"failed");
+        }
+        assertEq(result, true);
+    }
+
+}
+
+
 contract TestHelper is Test {
     MultiCaller public multicaller;
     IWETH public weth;
@@ -71,6 +110,9 @@ contract TestHelper is Test {
         vm.startPrank(0xF977814e90dA44bFA03b6295A0616a897441aceC); // Binance wallet for funding
         usdt.transfer(address(multicaller), 1_000_000_000); // 1k
     }
+
+    
+
 }
 
 contract Helper {
