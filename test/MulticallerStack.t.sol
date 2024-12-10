@@ -83,4 +83,19 @@ contract MulticallerStackTest is Test, Helper {
         uint ret = multicaller.doCalls(callDataMerged);
         assertEq(ret, 4660);
     }
+
+    function testBalanceStaticCallAndTransferNotAligned() public {
+        address addr = address(erc20Mock);
+
+        bytes memory callData = abi.encodeWithSignature("balanceOf(address)", addr);
+        bytes memory callData2 = abi.encodeWithSignature("transfer(address,uint256)", addr, 0x1);
+
+        bytes memory callDataMerged = abi.encodePacked(
+            mergeData(address(erc20Mock), callData, STATIC_CALL_SELECTOR, 0xFFFFFF, EncodeReturnStack(0, 0, 0x10, 0x10)),
+            mergeData(address(erc20Mock), callData2, ZERO_VALUE_CALL_SELECTOR, EncodeStack(0, 0, 0x24, 0x10), 0xFFFFFF)
+        );
+
+        uint ret = multicaller.doCalls(callDataMerged);
+        assertEq(ret, 4660);
+    }
 }

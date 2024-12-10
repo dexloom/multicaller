@@ -95,8 +95,10 @@
     dup1 __FUNC_SIG("uni2GetInAmountFrom1Comms(address,uint256,uint256)")      eq uni2getinamount1comms  jumpi
     dup1 __FUNC_SIG("uni2GetOutAmountFrom0Comms(address,uint256,uint256)")     eq uni2getoutamount0comms jumpi
     dup1 __FUNC_SIG("uni2GetOutAmountFrom1Comms(address,uint256,uint256)")     eq uni2getoutamount1comms jumpi
-    dup1 __FUNC_SIG("logStack()") eq logstack jumpi
-    dup1 __FUNC_SIG("logStackOffset(uint256)") eq logstack_offset jumpi
+    dup1 __FUNC_SIG("logArg(uint256)")                                         eq log_arg                jumpi
+    dup1 __FUNC_SIG("logStack()")                                              eq log_stack              jumpi
+    dup1 __FUNC_SIG("logStackOffset(uint256)")                                 eq log_stack_offset       jumpi
+    dup1 __FUNC_SIG("revertArg(uint256)")                                      eq revert_arg             jumpi
 
     0x9999 0x0 mstore 0x20 0x0 revert // RevertDebug
     
@@ -173,20 +175,39 @@
         TRANSFER_TIPS_MIN_BALANCE_WETH()
         exit jump
 
-    logstack:
+    log_arg:
+        pop // [length, prefix, offset]
+        dup4
+        0xC add
+        LOG_PARSE_ARG()
+        LOG_ARG()
+        pop
+        exit jump
+
+
+    log_stack:
         pop // [length, prefix, offset]
         dup4
         0xC add
         LOG_STACK()
         pop
         exit jump
-    logstack_offset:
+    log_stack_offset:
         pop // [length, prefix, offset]
         dup4
         0xC add
         LOG_PARSE_IDX()
         LOG_STACK_OFFSET()
         pop
+        exit jump
+    revert_arg:
+        pop // [length, prefix, offset]
+        dup4
+        0xC add
+        LOG_PARSE_ARG()
+        0x1 0xFF shl or
+        0x4 mstore
+        0x24 0x0 revert // RevertDebug
 
 
     exit:

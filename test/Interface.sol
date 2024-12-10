@@ -24,6 +24,7 @@ interface MultiCaller {
     function uni2GetInAmountFrom1Comms(address pool, uint256 amount, uint256 fee) external;
     function uni2GetOutAmountFrom0Comms(address pool, uint256 amount, uint256 fee) external;
     function uni2GetOutAmountFrom1Comms(address pool, uint256 amount, uint256 fee) external;
+    function unlockCallback(bytes calldata data) external payable returns(bytes memory);
     function logStack() external;
     function logStackOffset(uint256) external;
 }

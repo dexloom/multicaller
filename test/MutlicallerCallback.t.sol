@@ -16,6 +16,25 @@ import "./mocks/Uni2Pool.sol";
 import "./mocks/Uni3Pool.sol";
 
 contract MulticallerCallbackTest is Test, Helper, TestHelper {
+    function testCallErcInsideUni4CallbackArray() public {
+        console.log("testCallErcInsideUni2CallbackArray");
+        address addr = address(0x1122334455667788990011223344556677889900);
+        address addr2 = address(0x2233445566778899001122334455667788990011);
+
+        bytes memory callData = abi.encodeWithSignature("transfer(address,uint256)", addr, 0x1111111111);
+        bytes memory callData2 = abi.encodeWithSignature("balanceOf(address)", addr);
+        bytes memory callDataArray = abi.encodePacked(
+            mergeData(address(erc20Mock), callData, ZERO_VALUE_CALL_SELECTOR, 0xFFFFFF, 0xFFFFFF),
+            mergeData(address(erc20Mock), callData2, ZERO_VALUE_CALL_SELECTOR,  0xFFFFFF, EncodeReturnStack(1, 0 , 0x0, 0x20 ))
+        );
+
+        bytes memory callDoCallsData = abi.encodeWithSignature("doCalls(bytes)", callDataArray);
+
+        bytes memory ret = multicaller.unlockCallback(removeSignature(callDoCallsData));
+        //assertEq(ret, bytes(""));
+    }
+
+
     function testCallErcInsideUni2CallbackArray2() public {
         console.log("testCallErcInsideUni2CallbackArray");
         address addr = address(0x1122334455667788990011223344556677889900);
