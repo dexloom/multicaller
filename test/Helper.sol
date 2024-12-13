@@ -91,7 +91,7 @@ contract TestHelper is Test {
         usdt = IUSDT(USDT);
 
         donateWETH(address(multicaller));
-        donateUSDT(address(multicaller));
+        //donateUSDT(address(multicaller));
 
         console.log("Multicaller balance:", address(multicaller).balance);
         vm.startPrank(OPERATOR, OPERATOR);

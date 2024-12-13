@@ -2,4 +2,4 @@
 
 forge test --fork-url http://localhost:8545 \
   --sender 0x16Df4b25e4E37A9116eb224799c1e0Fb17fd8d30  \
-  --match-contract MulticallerCallbackTest --match-test testCallErcInsideUni4CallbackArray -vvvv
+  --match-contract MulticallerGasBench --match-test combo  -vvv

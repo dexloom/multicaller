@@ -69,7 +69,8 @@
     cnt_cr:
         // [stack_offset_bytes, src_offset_bytes, src_bytes_len,  mask]
         0x20 dup4 mod // [align, stack_offset_bytes, src_offset_bytes, src_bytes_len,  mask]
-        dup4 dup2 add // [new_stack_offset, align, stack_offset_bytes, src_offset_bytes, src_bytes_len,  mask]
+        dup4 dup2 add // [stack_shift, align, stack_offset_bytes, src_offset_bytes, src_bytes_len,  mask]
+        dup3 add // [new_stack_offset, align, stack_offset_bytes, src_offset_bytes, src_bytes_len,  mask]
         0x0 mstore // // [align, stack_offset_bytes, src_offset_bytes, src_bytes_len,  mask]
         add
         0x20 add // [stack_offset_bytes, src_offset_bytes, src_bytes_len,  mask]
